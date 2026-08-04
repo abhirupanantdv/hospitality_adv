@@ -53,18 +53,16 @@ hospitality_adv.CommandCenter = class CommandCenter {
             <aside class="had-left-rail">
                 ${this.priority_panel()}
                 ${this.kpi_panel()}
+                ${this.analytics_panel()}
                 ${this.pending_panel()}
             </aside>
             <main class="had-main-stage">
                 ${this.directory_panel()}
                 ${this.live_chart_panel()}
-                <div class="had-bottom-grid">
-                    ${this.analytics_panel()}
-                    ${this.status_panel()}
-                </div>
             </main>
             <aside class="had-right-rail">
                 ${this.insight_panel()}
+                ${this.status_panel()}
                 ${this.schedule_panel()}
             </aside>
         `);
