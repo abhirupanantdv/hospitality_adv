@@ -5,15 +5,8 @@ from frappe.defaults import get_global_default, set_global_default
 DESK_PAGE = "hospitality-adv-dashboard"
 
 
-def after_install():
-    set_default_desk_page()
-
-
-def after_migrate():
-    set_default_desk_page()
-
-
 def set_default_desk_page():
+    """Optional administrator action; this app never changes the global Desk route automatically."""
     set_global_default("desktop:home_page", DESK_PAGE)
     frappe.clear_cache()
 

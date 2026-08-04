@@ -35,10 +35,11 @@ API methods are retained for integrations but no separate frontend is included.
 
 ## Desk Dashboard
 
-The default Desk route is `hospitality-adv-dashboard`. It provides a single-page
-command center for accounting, buying, selling, stock, HRMS, and Hospitality ADV
-DocTypes. Cards are shown only when the logged-in user has access to the related
-DocType; ERPNext and HRMS content is therefore available when those apps are installed.
+`hospitality-adv-dashboard` provides a single-page command center for accounting,
+buying, selling, stock, HRMS, and Hospitality ADV DocTypes. Cards are shown only
+when the logged-in user has access to the related DocType; ERPNext and HRMS content
+is therefore available when those apps are installed. The app does not change the
+site's global Desk home page automatically.
 
 `hospitality-adv-insights` is a second Desk page containing tab-aligned charts for
 finance, selling, buying, stock, HRMS, hotel operations, and Hospitality ADV POS.
@@ -52,8 +53,8 @@ bench build --app hospitality_adv
 bench --site your-site.local clear-cache
 ```
 
-For an existing site, `bench --site your-site.local migrate` also applies the
-dashboard as the global Desk home page.
+Open the command center at `/app/hospitality-adv-dashboard` and Insights at
+`/app/hospitality-adv-insights` after migration.
 
 ## Demo Data
 
