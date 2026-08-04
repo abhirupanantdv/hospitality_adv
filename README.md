@@ -46,3 +46,6 @@ After installing or updating the app, build its Desk assets before signing in:
 bench build --app hospitality_adv
 bench --site your-site.local clear-cache
 ```
+
+For an existing site, `bench --site your-site.local migrate` also applies the
+dashboard as the global Desk home page.
