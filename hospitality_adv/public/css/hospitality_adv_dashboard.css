@@ -320,6 +320,21 @@
 .had-insight-chart-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .had-insight-chart-card { background: var(--had-surface); border: 1px solid var(--had-line); border-radius: 8px; min-width: 0; padding: 16px; }
 .had-insight-chart-card h4 { font-size: 13px; font-weight: 650; margin: 0 0 10px; }
+.had-finance-layout { align-items: start; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) 310px; }
+.had-finance-charts { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
+.had-finance-reports { display: grid; gap: 14px; }
+.had-finance-report-card { background: var(--had-surface); border: 1px solid var(--had-line); border-radius: 8px; display: grid; gap: 8px; padding: 15px; }
+.had-finance-report-head { align-items: baseline; display: flex; gap: 10px; justify-content: space-between; }
+.had-finance-report-head h4 { font-size: 13px; font-weight: 650; margin: 0; }
+.had-finance-report-head strong { color: var(--had-ink); font-size: 14px; white-space: nowrap; }
+.had-finance-report-card > span { color: var(--had-muted); font-size: 11px; }
+.had-finance-list { border-top: 1px solid #edf1f5; display: grid; }
+.had-finance-row { align-items: center; border-bottom: 1px solid #edf1f5; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) 24px auto; min-height: 28px; }
+.had-finance-row span { color: var(--had-muted); font-size: 11px; }
+.had-finance-row b { font-size: 11px; text-align: center; }
+.had-finance-row strong { font-size: 11px; font-weight: 650; text-align: right; white-space: nowrap; }
+.had-finance-row.is-overdue span, .had-finance-row.is-overdue strong { color: var(--had-rose); }
+.had-finance-report-link { background: transparent; border: 0; color: var(--had-teal); font-size: 12px; font-weight: 650; justify-self: start; padding: 2px 0; }
 .had-insights-shell.is-loading { opacity: .58; pointer-events: none; }
 .had-insights-shell button:not(:disabled) { cursor: pointer; transition: box-shadow 120ms ease, transform 120ms ease, border-color 120ms ease; }
 .had-insights-shell button:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(31, 47, 64, .13); transform: translateY(-1px); }
@@ -334,6 +349,8 @@
     .had-left-rail, .had-right-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .had-priority-panel, .had-kpi-panel, .had-pending-panel { height: 100%; }
     .had-insights-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .had-finance-layout { grid-template-columns: 1fr; }
+    .had-finance-reports { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 640px) {
@@ -341,6 +358,6 @@
     .had-left-rail, .had-right-rail, .had-bottom-grid { grid-template-columns: 1fr; }
     .had-directory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .had-directory-card { min-height: 98px; }
-    .had-tab-chart-grid, .had-insight-chart-grid, .had-insights-metrics { grid-template-columns: 1fr; }
+    .had-tab-chart-grid, .had-insight-chart-grid, .had-finance-charts, .had-finance-reports, .had-insights-metrics { grid-template-columns: 1fr; }
     .had-insights-header { align-items: start; flex-direction: column; }
 }

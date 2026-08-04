@@ -12,7 +12,7 @@ frappe.pages["hospitality-adv-dashboard"].on_page_show = function (wrapper) {
 hospitality_adv.CommandCenter = class CommandCenter {
     constructor(wrapper) {
         this.wrapper = wrapper;
-        this.active_tab = "operations";
+        this.active_tab = "finance";
         this.page = frappe.ui.make_app_page({
             parent: wrapper,
             title: __("Hospitality ADV Command Center"),
@@ -126,7 +126,7 @@ hospitality_adv.CommandCenter = class CommandCenter {
         return `<button class="had-pending-row had-route" type="button" data-kind="document" data-target="${this.escape(record.doctype)}" data-name="${this.escape(record.name)}" data-label="${this.escape(record.title)}">
             <span class="had-alert-dot"></span>
             <span class="had-row-copy"><strong>${this.escape(record.title)}</strong><small>${this.escape(record.name)}${record.detail ? ` - ${this.escape(record.detail)}` : ""}</small></span>
-            <b>${record.amount === null || record.amount === undefined ? "" : frappe.format(record.amount, { fieldtype: "Currency" })}</b>
+            <b>${record.amount === null || record.amount === undefined ? "" : this.money(record.amount)}</b>
         </button>`;
     }
 
@@ -441,7 +441,13 @@ hospitality_adv.CommandCenter = class CommandCenter {
     }
 
     count(value) {
-        return value === null || value === undefined ? "--" : frappe.format(value, { fieldtype: "Int" });
+        return value === null || value === undefined ? "--" : new Intl.NumberFormat().format(Number(value) || 0);
+    }
+
+    money(value) {
+        const amount = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(Number(value) || 0);
+        const currency = frappe.boot?.sysdefaults?.currency;
+        return currency ? `${currency} ${amount}` : amount;
     }
 
     escape(value) {

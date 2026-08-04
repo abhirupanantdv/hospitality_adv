@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import add_months, date_diff, flt, getdate, now_datetime, nowdate
+from frappe.utils import add_months, date_diff, flt, formatdate, getdate, now_datetime, nowdate
 
 
 HOSPITALITY_DOCTYPES = [
@@ -183,7 +183,7 @@ def _invoice_due_detail(due_date, days_overdue):
     if days_overdue:
         return _("Overdue by {0} day(s)", [days_overdue])
     if due_date:
-        return _("Due {0}", [frappe.format(due_date, {"fieldtype": "Date"})])
+        return _("Due {0}", [formatdate(due_date)])
     return _("No due date")
 
 
@@ -337,7 +337,7 @@ def _chart(title, labels, datasets, chart_type="bar", colors=None, empty_message
         "type": chart_type,
         "data": {"labels": labels, "datasets": datasets},
         "colors": colors or ["#257d7c", "#7653a4"],
-        "empty_message": empty_message or _("No accessible records in this period."),
+        "empty_message": empty_message or _("No records in the selected period."),
         "value_format": value_format,
     }
 

@@ -55,7 +55,7 @@ hospitality_adv.InsightsPage = class InsightsPage {
                 ${this.metric(__("Overdue purchase invoices"), this.data.metrics.overdue_purchase_invoices, __("Past due payables"))}
                 ${this.metric(__("Overdue operations tasks"), this.data.metrics.overdue_hospitality_tasks, __("Past due tasks"))}
             </section>
-            ${this.chart_section("finance", __("Finance"), __("Accounting"))}
+            ${this.finance_section()}
             ${this.chart_section("selling", __("Selling"), __("Quotations and sales"))}
             ${this.chart_section("buying", __("Buying"), __("Purchase operations"))}
             ${this.chart_section("stock", __("Stock"), __("Inventory movements"))}
@@ -73,6 +73,9 @@ hospitality_adv.InsightsPage = class InsightsPage {
             .off("click", ".had-open-command")
             .on("click", ".had-open-command", () => frappe.set_route("hospitality-adv-dashboard"));
         this.$shell.off("click", ".had-refresh-insights").on("click", ".had-refresh-insights", () => this.refresh());
+        this.$shell.off("click", ".had-open-report").on("click", ".had-open-report", (event) => {
+            frappe.set_route("query-report", $(event.currentTarget).data("report"));
+        });
     }
 
     metric(label, value, detail) {
@@ -84,16 +87,51 @@ hospitality_adv.InsightsPage = class InsightsPage {
         return `<section class="had-insight-section">
             <div class="had-insight-section-header"><h3>${this.escape(title)}</h3><span>${this.escape(subtitle)}</span></div>
             <div class="had-insight-chart-grid">
-                ${charts
-                    .map(
-                        (chart, index) => `<article class="had-insight-chart-card">
-                            <h4>${this.escape(chart.title)}</h4>
-                            <div class="had-live-chart had-insight-chart" data-group="${group}" data-chart-index="${index}"></div>
-                        </article>`
-                    )
-                    .join("")}
+                ${charts.map((chart, index) => this.chart_card(group, chart, index)).join("")}
             </div>
         </section>`;
+    }
+
+    finance_section() {
+        const charts = this.data.charts?.finance || [];
+        return `<section class="had-insight-section had-finance-section">
+            <div class="had-insight-section-header"><h3>${__("Finance")}</h3><span>${__("Accounting, receivables and payables")}</span></div>
+            <div class="had-finance-layout">
+                <div class="had-finance-charts">
+                    ${charts.map((chart, index) => this.chart_card("finance", chart, index)).join("")}
+                </div>
+                <aside class="had-finance-reports">
+                    ${this.finance_report(__("Accounts Receivable"), "Accounts Receivable", this.data.financials?.sales || {})}
+                    ${this.finance_report(__("Accounts Payable"), "Accounts Payable", this.data.financials?.purchase || {})}
+                </aside>
+            </div>
+        </section>`;
+    }
+
+    chart_card(group, chart, index) {
+        return `<article class="had-insight-chart-card">
+            <h4>${this.escape(chart.title)}</h4>
+            <div class="had-live-chart had-insight-chart" data-group="${group}" data-chart-index="${index}"></div>
+        </article>`;
+    }
+
+    finance_report(title, report, health) {
+        const is_available = this.data.reports?.[report];
+        return `<section class="had-finance-report-card">
+            <div class="had-finance-report-head"><h4>${this.escape(title)}</h4><strong>${this.money(health.outstanding_amount)}</strong></div>
+            <span>${this.count(health.outstanding_count)} ${__("open invoices")}</span>
+            <div class="had-finance-list">
+                ${this.finance_row(__("Overdue"), health.overdue_count, health.overdue_amount, "is-overdue")}
+                ${this.finance_row(__("1-30 days"), health.age_1_30_count, health.age_1_30_amount)}
+                ${this.finance_row(__("31-60 days"), health.age_31_60_count, health.age_31_60_amount)}
+                ${this.finance_row(__("61+ days"), health.age_61_plus_count, health.age_61_plus_amount)}
+            </div>
+            <button class="had-finance-report-link had-open-report" type="button" data-report="${this.escape(report)}" ${is_available ? "" : "disabled"}>${__("Open report")}</button>
+        </section>`;
+    }
+
+    finance_row(label, count, amount, class_name = "") {
+        return `<div class="had-finance-row ${class_name}"><span>${this.escape(label)}</span><b>${this.count(count)}</b><strong>${this.money(amount)}</strong></div>`;
     }
 
     render_chart(element, chart) {
@@ -145,7 +183,13 @@ hospitality_adv.InsightsPage = class InsightsPage {
     }
 
     count(value) {
-        return value === null || value === undefined ? "--" : frappe.format(value, { fieldtype: "Int" });
+        return value === null || value === undefined ? "--" : new Intl.NumberFormat().format(Number(value) || 0);
+    }
+
+    money(value) {
+        const amount = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(Number(value) || 0);
+        const currency = frappe.boot?.sysdefaults?.currency;
+        return currency ? `${currency} ${amount}` : amount;
     }
 
     escape(value) {
