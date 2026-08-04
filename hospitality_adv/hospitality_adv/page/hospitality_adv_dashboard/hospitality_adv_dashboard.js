@@ -12,10 +12,10 @@ frappe.pages["hospitality-adv-dashboard"].on_page_show = function (wrapper) {
 hospitality_adv.CommandCenter = class CommandCenter {
     constructor(wrapper) {
         this.wrapper = wrapper;
-        this.active_tab = "overview";
+        this.active_tab = "operations";
         this.page = frappe.ui.make_app_page({
             parent: wrapper,
-            title: __("Hospitality ADV"),
+            title: __("Hospitality ADV Command Center"),
             single_column: true,
         });
         this.page.set_primary_action(__("New Customer"), () => this.new_doc("Customer"), "add");
@@ -25,275 +25,293 @@ hospitality_adv.CommandCenter = class CommandCenter {
     }
 
     make_layout() {
-        this.$body = $(
-            `<div class="hospitality-adv-dashboard">
-                <div class="had-metrics" aria-live="polite"></div>
-                <div class="had-tabs" role="tablist">
-                    ${this.tab_button("overview", __("Overview"))}
-                    ${this.tab_button("accounting", __("Accounting"))}
-                    ${this.tab_button("buying", __("Buying"))}
-                    ${this.tab_button("selling", __("Selling"))}
-                    ${this.tab_button("stock", __("Stock"))}
-                    ${this.tab_button("hrms", __("HRMS"))}
-                    ${this.tab_button("hospitality", __("Hospitality ADV"))}
-                </div>
-                <div class="had-content"></div>
-            </div>`
-        ).appendTo(this.page.main);
-
-        this.$body.on("click", ".had-tab", (event) => {
+        this.$shell = $("<div class='had-shell' aria-live='polite'></div>").appendTo(this.page.main);
+        this.$shell.on("click", ".had-tab", (event) => {
             this.active_tab = $(event.currentTarget).data("tab");
             this.render();
         });
-        this.$body.on("click", ".had-route", (event) => this.open_route(event));
-        this.$body.on("click", ".had-new", (event) => this.new_doc($(event.currentTarget).data("doctype")));
-    }
-
-    tab_button(key, label) {
-        return `<button class="had-tab" type="button" role="tab" data-tab="${key}">${label}</button>`;
+        this.$shell.on("click", ".had-route", (event) => this.open_route(event));
+        this.$shell.on("click", ".had-new", (event) => this.new_doc($(event.currentTarget).data("doctype")));
     }
 
     refresh() {
-        this.$body?.addClass("is-loading");
+        this.$shell.addClass("is-loading");
         frappe.call({
             method: "hospitality_adv.dashboard.get_dashboard_data",
             callback: (response) => {
                 this.data = response.message;
                 this.render();
             },
-            always: () => this.$body?.removeClass("is-loading"),
+            always: () => this.$shell.removeClass("is-loading"),
         });
     }
 
     render() {
-        if (!this.data) {
-            return;
-        }
-        this.render_metrics();
-        this.$body.find(".had-tab").attr("aria-selected", "false").removeClass("is-active");
-        this.$body
-            .find(`.had-tab[data-tab="${this.active_tab}"]`)
-            .attr("aria-selected", "true")
-            .addClass("is-active");
-        this.$body.find(".had-content").html(this.render_tab());
+        if (!this.data) return;
+        this.$shell.html(`
+            <aside class="had-left-rail">
+                ${this.priority_panel()}
+                ${this.kpi_panel()}
+                ${this.pending_panel()}
+            </aside>
+            <main class="had-main-stage">
+                ${this.directory_panel()}
+                <div class="had-bottom-grid">
+                    ${this.analytics_panel()}
+                    ${this.status_panel()}
+                </div>
+            </main>
+            <aside class="had-right-rail">
+                ${this.insight_panel()}
+                ${this.schedule_panel()}
+            </aside>
+        `);
     }
 
-    render_metrics() {
-        const metrics = [
-            ["customers", __("Customers"), "Customer"],
-            ["draft_quotations", __("Pending Quotations"), "Quotation"],
-            ["receivables", __("Receivables"), "Sales Invoice"],
-            ["payables", __("Payables"), "Purchase Invoice"],
-            ["stock_items", __("Stock Items"), "Item"],
-            ["active_reservations", __("Active Reservations"), "Hospitality ADV Reservation"],
-        ];
-        this.$body.find(".had-metrics").html(
-            metrics
-                .map(([key, label, doctype]) => this.metric_card(label, this.data.metrics[key], doctype))
-                .join("")
-        );
+    priority_panel() {
+        const priority = this.data.metrics.open_hospitality_tasks || this.data.metrics.draft_quotations || 0;
+        return `<section class="had-priority-panel">
+            <div class="had-panel-title"><span class="had-title-mark"></span><h3>${__("Top Priorities")}</h3></div>
+            <strong>${priority ? __("{0} items need attention", [priority]) : __("No open priorities")}</strong>
+            <button class="had-link-button had-route" type="button" data-kind="doctype" data-target="Hospitality ADV Operation Task" data-label="${__("Operations Tasks")}">${__("View All")}</button>
+        </section>`;
     }
 
-    metric_card(label, value, doctype) {
-        const unavailable = !this.is_available(doctype);
-        return `<button class="had-metric had-route ${unavailable ? "is-unavailable" : ""}" type="button"
-            data-kind="doctype" data-target="${this.escape(doctype)}" data-label="${this.escape(label)}" ${
-                unavailable ? "disabled" : ""
-            }>
+    kpi_panel() {
+        return `<section class="had-kpi-panel">
+            <div class="had-panel-title"><h3>${__("Live KPIs")}</h3></div>
+            <div class="had-kpi-grid">
+                ${this.kpi_tile(__("Receivables"), this.data.metrics.receivables, "had-kpi-accounting", "Sales Invoice")}
+                ${this.kpi_tile(__("Open Tasks"), this.data.metrics.open_hospitality_tasks, "had-kpi-operations", "Hospitality ADV Operation Task")}
+            </div>
+        </section>`;
+    }
+
+    kpi_tile(label, value, class_name, doctype) {
+        return `<button class="had-kpi-tile had-route ${class_name}" type="button" data-kind="doctype" data-target="${this.escape(doctype)}" data-label="${this.escape(label)}" ${
+            this.is_available(doctype) ? "" : "disabled"
+        }>
             <span>${this.escape(label)}</span>
-            <strong>${value === null || value === undefined ? "--" : frappe.format(value, { fieldtype: "Int" })}</strong>
+            <strong>${this.count(value)}</strong>
+            <small>${this.is_available(doctype) ? __("Open list") : __("Unavailable")}</small>
         </button>`;
     }
 
-    render_tab() {
-        const tabs = {
-            overview: () => this.overview(),
-            accounting: () => this.module_tab("accounting"),
-            buying: () => this.module_tab("buying"),
-            selling: () => this.module_tab("selling"),
-            stock: () => this.module_tab("stock"),
-            hrms: () => this.module_tab("hrms"),
-            hospitality: () => this.module_tab("hospitality"),
-        };
-        return tabs[this.active_tab]();
-    }
-
-    overview() {
-        return `<div class="had-overview">
-            <section class="had-panel had-quick-actions">
-                <div class="had-section-heading"><h3>${__("Create")}</h3></div>
-                <div class="had-command-grid">
-                    ${this.new_button(__("Customer"), "Customer")}
-                    ${this.new_button(__("Item"), "Item")}
-                    ${this.new_button(__("Quotation"), "Quotation")}
-                    ${this.new_button(__("Sales Invoice"), "Sales Invoice")}
-                    ${this.new_button(__("Purchase Order"), "Purchase Order")}
-                    ${this.new_button(__("Reservation"), "Hospitality ADV Reservation")}
-                </div>
-            </section>
-            <div class="had-work-grid">
-                ${this.pending_panel(__("Pending Quotations"), this.data.pending.quotations)}
-                ${this.pending_panel(__("Pending Sales Invoices"), this.data.pending.sales_invoices)}
-                ${this.pending_panel(__("Open Hospitality Tasks"), this.data.pending.hospitality_tasks)}
-            </div>
-            <section class="had-panel had-shortcuts">
-                <div class="had-section-heading"><h3>${__("Core Workflows")}</h3></div>
-                <div class="had-command-grid">
-                    ${this.route_button(__("Buying"), "doctype", "Purchase Order", "Purchase Order")}
-                    ${this.route_button(__("Selling"), "doctype", "Sales Order", "Sales Order")}
-                    ${this.route_button(__("Stock"), "doctype", "Stock Entry", "Stock Entry")}
-                    ${this.route_button(__("HRMS"), "doctype", "Employee", "Employee")}
-                    ${this.route_button(__("Hospitality ADV"), "doctype", "Hospitality ADV Room", "Hospitality ADV Room")}
-                </div>
-            </section>
-        </div>`;
-    }
-
-    module_tab(module) {
-        const definitions = {
-            accounting: {
-                title: __("Accounting"),
-                metrics: [
-                    ["receivables", __("Receivable Invoices"), "Sales Invoice"],
-                    ["payables", __("Payable Invoices"), "Purchase Invoice"],
-                ],
-                docs: ["Customer", "Sales Invoice", "Purchase Invoice", "Payment Entry", "Journal Entry"],
-                reports: ["Accounts Receivable", "Accounts Payable", "Balance Sheet", "Profit and Loss Statement", "General Ledger"],
-            },
-            buying: {
-                title: __("Buying"),
-                metrics: [["open_purchase_orders", __("Submitted Purchase Orders"), "Purchase Order"]],
-                docs: ["Supplier", "Material Request", "Request for Quotation", "Supplier Quotation", "Purchase Order", "Purchase Invoice"],
-                reports: ["Accounts Payable"],
-            },
-            selling: {
-                title: __("Selling"),
-                metrics: [["draft_quotations", __("Pending Quotations"), "Quotation"]],
-                docs: ["Customer", "Quotation", "Sales Order", "Delivery Note", "Sales Invoice", "Payment Entry"],
-                reports: ["Sales Analytics", "Accounts Receivable"],
-            },
-            stock: {
-                title: __("Stock"),
-                metrics: [["stock_items", __("Active Items"), "Item"]],
-                docs: ["Item", "Item Group", "Warehouse", "Material Request", "Stock Entry", "Delivery Note"],
-                reports: ["Stock Balance", "Stock Ledger"],
-            },
-            hrms: {
-                title: __("HRMS"),
-                metrics: [
-                    ["active_employees", __("Active Employees"), "Employee"],
-                    ["open_leave_requests", __("Open Leave Requests"), "Leave Application"],
-                ],
-                docs: ["Employee", "Attendance", "Leave Application", "Salary Slip", "Payroll Entry"],
-                reports: [],
-            },
-            hospitality: {
-                title: __("Hospitality ADV"),
-                metrics: [
-                    ["active_reservations", __("Active Reservations"), "Hospitality ADV Reservation"],
-                    ["open_hospitality_tasks", __("Open Tasks"), "Hospitality ADV Operation Task"],
-                ],
-                docs: [
-                    "Hospitality ADV Property",
-                    "Hospitality ADV Room Type",
-                    "Hospitality ADV Room",
-                    "Hospitality ADV Guest",
-                    "Hospitality ADV Reservation",
-                    "Hospitality ADV Guest Stay",
-                    "Hospitality ADV Guest Message",
-                    "Hospitality ADV Operation Task",
-                    "Hospitality ADV Housekeeping Inspection",
-                    "Hospitality ADV Maintenance Event",
-                    "Hospitality ADV Hotspot Session",
-                    "Hospitality ADV Network Flow",
-                    "Hospitality ADV Access Event",
-                    "Hospitality ADV Guest Credential",
-                    "Hospitality ADV Lift Permission",
-                    "Hospitality ADV POS Outlet",
-                    "Hospitality ADV POS Order",
-                    "Hospitality ADV Staff Roster",
-                    "Hospitality ADV OTA Channel",
-                    "Hospitality ADV Integration Event",
-                ],
-                reports: [],
-            },
-        };
-        const definition = definitions[module];
-        return `<div class="had-module">
-            <section class="had-module-header">
-                <h2>${definition.title}</h2>
-                <div class="had-inline-metrics">
-                    ${definition.metrics.map(([key, label, doctype]) => this.metric_card(label, this.data.metrics[key], doctype)).join("")}
-                </div>
-            </section>
-            <section class="had-panel">
-                <div class="had-section-heading"><h3>${__("Documents")}</h3></div>
-                <div class="had-command-grid">
-                    ${definition.docs.map((doctype) => this.route_button(doctype, "doctype", doctype, doctype)).join("")}
-                </div>
-            </section>
-            ${definition.reports.length ? this.report_panel(definition.reports) : ""}
-            ${module === "accounting" ? this.pending_panel(__("Pending Purchase Invoices"), this.data.pending.purchase_invoices) : ""}
-        </div>`;
-    }
-
-    report_panel(reports) {
-        return `<section class="had-panel">
-            <div class="had-section-heading"><h3>${__("Reports")}</h3></div>
-            <div class="had-command-grid">
-                ${reports.map((report) => this.route_button(report, "report", report, report)).join("")}
-            </div>
-        </section>`;
-    }
-
-    pending_panel(title, records) {
-        const content = records.length
-            ? records
-                  .map(
-                      (record) => `<button type="button" class="had-list-row had-route" data-kind="document"
-                            data-target="${this.escape(record.doctype)}" data-name="${this.escape(record.name)}"
-                            data-label="${this.escape(record.title)}">
-                            <span><strong>${this.escape(record.title)}</strong><small>${this.escape(record.status || record.name)}</small></span>
-                            <b>${record.amount === null || record.amount === undefined ? "" : frappe.format(record.amount, { fieldtype: "Currency" })}</b>
-                        </button>`
-                  )
-                  .join("")
+    pending_panel() {
+        const records = [...this.data.pending.sales_invoices, ...this.data.pending.quotations].slice(0, 5);
+        const rows = records.length
+            ? records.map((record) => this.pending_row(record)).join("")
             : `<div class="had-empty-state">${__("Nothing pending")}</div>`;
-        return `<section class="had-panel had-pending-panel">
-            <div class="had-section-heading"><h3>${title}</h3></div>
-            <div class="had-list">${content}</div>
+        return `<section class="had-pending-panel">
+            <div class="had-section-head"><h3>${__("Pending Documents")}</h3><button class="had-link-button had-route" type="button" data-kind="doctype" data-target="Sales Invoice" data-label="${__("Sales Invoices")}">${__("View All")}</button></div>
+            <div class="had-pending-list">${rows}</div>
         </section>`;
     }
 
-    new_button(label, doctype) {
-        const unavailable = !this.is_available(doctype);
-        return `<button class="had-command had-new ${unavailable ? "is-unavailable" : ""}" type="button"
-            data-doctype="${this.escape(doctype)}" ${unavailable ? "disabled" : ""}>
-            <span>${this.escape(label)}</span><small>${__("New")}</small>
+    pending_row(record) {
+        return `<button class="had-pending-row had-route" type="button" data-kind="document" data-target="${this.escape(record.doctype)}" data-name="${this.escape(record.name)}" data-label="${this.escape(record.title)}">
+            <span class="had-alert-dot"></span>
+            <span class="had-row-copy"><strong>${this.escape(record.title)}</strong><small>${this.escape(record.name)}</small></span>
+            <b>${record.amount === null || record.amount === undefined ? "" : frappe.format(record.amount, { fieldtype: "Currency" })}</b>
         </button>`;
     }
 
-    route_button(label, kind, target, doctype) {
-        const available = kind === "report" ? this.data.reports[target] : this.is_available(doctype);
-        return `<button class="had-command had-route ${available ? "" : "is-unavailable"}" type="button"
-            data-kind="${kind}" data-target="${this.escape(target)}" data-label="${this.escape(label)}" ${
-                available ? "" : "disabled"
-            }>
-            <span>${this.escape(label)}</span><small>${available ? __("Open") : __("Unavailable")}</small>
+    directory_panel() {
+        return `<section class="had-directory-panel">
+            <div class="had-directory-head">
+                <div><div class="had-panel-title"><span class="had-module-mark"></span><h2>${__("Module Directory")}</h2></div>
+                <div class="had-recent-actions">
+                    ${this.new_action(__("Customer"), "Customer")}
+                    ${this.new_action(__("Quotation"), "Quotation")}
+                    ${this.new_action(__("Sales Invoice"), "Sales Invoice")}
+                    ${this.new_action(__("Item"), "Item")}
+                </div></div>
+            </div>
+            <div class="had-tabs" role="tablist">
+                ${this.tab_button("operations", __("Operations"))}
+                ${this.tab_button("finance", __("Finance"))}
+                ${this.tab_button("logistics", __("Logistics"))}
+                ${this.tab_button("hrms", __("Human Resources"))}
+                ${this.tab_button("hospitality", __("Hospitality ADV"))}
+            </div>
+            <div class="had-directory-grid">${this.directory_cards()}</div>
+        </section>`;
+    }
+
+    new_action(label, doctype) {
+        return `<button class="had-recent-chip had-new" type="button" data-doctype="${this.escape(doctype)}" ${
+            this.is_available(doctype) ? "" : "disabled"
+        }>${this.escape(label)}</button>`;
+    }
+
+    tab_button(key, label) {
+        return `<button class="had-tab ${this.active_tab === key ? "is-active" : ""}" type="button" role="tab" aria-selected="${
+            this.active_tab === key
+        }" data-tab="${key}">${label}</button>`;
+    }
+
+    directory_cards() {
+        const modules = {
+            operations: [
+                [__("Reservations"), "Hospitality ADV Reservation"],
+                [__("Room Board"), "Hospitality ADV Room"],
+                [__("Guest Requests"), "Hospitality ADV Guest Message"],
+                [__("Buying"), "Purchase Order"],
+                [__("Selling"), "Sales Order"],
+                [__("Stock"), "Stock Entry"],
+            ],
+            finance: [
+                [__("Customers"), "Customer"],
+                [__("Quotations"), "Quotation"],
+                [__("Sales Invoices"), "Sales Invoice"],
+                [__("Purchase Invoices"), "Purchase Invoice"],
+                [__("Receivables"), "Accounts Receivable", "report"],
+                [__("Payables"), "Accounts Payable", "report"],
+            ],
+            logistics: [
+                [__("Items"), "Item"],
+                [__("Warehouses"), "Warehouse"],
+                [__("Material Requests"), "Material Request"],
+                [__("Purchase Orders"), "Purchase Order"],
+                [__("Stock Entry"), "Stock Entry"],
+                [__("Stock Balance"), "Stock Balance", "report"],
+            ],
+            hrms: [
+                [__("Employees"), "Employee"],
+                [__("Attendance"), "Attendance"],
+                [__("Leave Requests"), "Leave Application"],
+                [__("Salary Slips"), "Salary Slip"],
+                [__("Payroll"), "Payroll Entry"],
+                [__("Staff Roster"), "Hospitality ADV Staff Roster"],
+            ],
+            hospitality: [
+                [__("Properties"), "Hospitality ADV Property"],
+                [__("Room Types"), "Hospitality ADV Room Type"],
+                [__("Rooms"), "Hospitality ADV Room"],
+                [__("Guests"), "Hospitality ADV Guest"],
+                [__("Reservations"), "Hospitality ADV Reservation"],
+                [__("Guest Stays"), "Hospitality ADV Guest Stay"],
+                [__("Guest Messages"), "Hospitality ADV Guest Message"],
+                [__("Operations Tasks"), "Hospitality ADV Operation Task"],
+                [__("Housekeeping"), "Hospitality ADV Housekeeping Inspection"],
+                [__("Maintenance"), "Hospitality ADV Maintenance Event"],
+                [__("Hotspot Sessions"), "Hospitality ADV Hotspot Session"],
+                [__("Network Flows"), "Hospitality ADV Network Flow"],
+                [__("Access Events"), "Hospitality ADV Access Event"],
+                [__("Guest Credentials"), "Hospitality ADV Guest Credential"],
+                [__("Lift Permissions"), "Hospitality ADV Lift Permission"],
+                [__("POS Outlets"), "Hospitality ADV POS Outlet"],
+                [__("POS Orders"), "Hospitality ADV POS Order"],
+                [__("OTA Channels"), "Hospitality ADV OTA Channel"],
+                [__("Integration Events"), "Hospitality ADV Integration Event"],
+            ],
+        };
+        return modules[this.active_tab]
+            .map(([label, target, kind = "doctype"]) => this.directory_card(label, target, kind))
+            .join("");
+    }
+
+    directory_card(label, target, kind) {
+        const available = kind === "report" ? this.data.reports[target] : this.is_available(target);
+        return `<button class="had-directory-card had-route ${available ? "" : "is-unavailable"}" type="button" data-kind="${kind}" data-target="${this.escape(target)}" data-label="${this.escape(label)}" ${
+            available ? "" : "disabled"
+        }>
+            <span class="had-directory-icon">${this.card_mark(label)}</span>
+            <strong>${this.escape(label)}</strong>
+            <small>${available ? __("Open") : __("Unavailable")}</small>
         </button>`;
+    }
+
+    card_mark(label) {
+        return this.escape(label.charAt(0));
+    }
+
+    analytics_panel() {
+        const bars = [
+            [__("Quotes"), this.data.metrics.draft_quotations],
+            [__("Sales"), this.data.metrics.draft_sales_invoices],
+            [__("Purchase"), this.data.metrics.draft_purchase_invoices],
+            [__("Tasks"), this.data.metrics.open_hospitality_tasks],
+        ];
+        const highest = Math.max(...bars.map(([, value]) => Number(value) || 0), 1);
+        return `<section class="had-analytics-panel">
+            <div class="had-section-head"><h3>${__("Analytics")}</h3><span>${__("Current Workload")}</span></div>
+            <div class="had-bar-chart">${bars
+                .map(
+                    ([label, value]) => `<div class="had-bar-item"><i style="--had-value:${Math.max(
+                        8,
+                        ((Number(value) || 0) / highest) * 100
+                    )}%"></i><strong>${this.count(value)}</strong><span>${label}</span></div>`
+                )
+                .join("")}</div>
+        </section>`;
+    }
+
+    status_panel() {
+        const statuses = [
+            [__("Pending Quotations"), this.data.metrics.draft_quotations, "Quotation"],
+            [__("Draft Sales Invoices"), this.data.metrics.draft_sales_invoices, "Sales Invoice"],
+            [__("Draft Purchase Invoices"), this.data.metrics.draft_purchase_invoices, "Purchase Invoice"],
+            [__("Open Hospitality Tasks"), this.data.metrics.open_hospitality_tasks, "Hospitality ADV Operation Task"],
+        ];
+        return `<section class="had-status-panel">
+            <div class="had-section-head"><h3>${__("System Status")}</h3><span>${__("Live")}</span></div>
+            <div class="had-status-grid">${statuses
+                .map(
+                    ([label, value, doctype]) => `<button class="had-status-tile had-route" type="button" data-kind="doctype" data-target="${this.escape(doctype)}" data-label="${this.escape(label)}" ${
+                        this.is_available(doctype) ? "" : "disabled"
+                    }><strong>${this.count(value)}</strong><span>${this.escape(label)}</span></button>`
+                )
+                .join("")}</div>
+        </section>`;
+    }
+
+    insight_panel() {
+        const total = [
+            this.data.metrics.draft_quotations,
+            this.data.metrics.draft_sales_invoices,
+            this.data.metrics.draft_purchase_invoices,
+            this.data.metrics.open_hospitality_tasks,
+        ].reduce((sum, value) => sum + (Number(value) || 0), 0);
+        return `<section class="had-insight-panel">
+            <div class="had-panel-title"><span class="had-live-dot"></span><h3>${__("Operations Insight")}</h3></div>
+            <div class="had-insight-score">${Math.min(100, 100 - total * 3)}<small>%</small></div>
+            <span class="had-insight-caption">${__("Workflow readiness")}</span>
+            <div class="had-insight-lines">
+                ${this.insight_line(__("Open requests"), total)}
+                ${this.insight_line(__("Active reservations"), this.data.metrics.active_reservations)}
+                ${this.insight_line(__("Available stock items"), this.data.metrics.stock_items)}
+            </div>
+        </section>`;
+    }
+
+    insight_line(label, value) {
+        return `<div><span>${this.escape(label)}</span><strong>${this.count(value)}</strong></div>`;
+    }
+
+    schedule_panel() {
+        const entries = [
+            [__("Invoice review"), this.data.pending.sales_invoices[0]?.title || __("No draft invoices")],
+            [__("Quotation follow-up"), this.data.pending.quotations[0]?.title || __("No draft quotations")],
+            [__("Guest operations"), this.data.pending.hospitality_tasks[0]?.title || __("No open tasks")],
+        ];
+        return `<section class="had-schedule-panel">
+            <div class="had-panel-title"><h3>${__("Upcoming Schedule")}</h3></div>
+            <div class="had-schedule-list">${entries
+                .map(
+                    ([label, detail]) => `<div><span class="had-schedule-dot"></span><p><strong>${this.escape(label)}</strong><small>${this.escape(detail)}</small></p></div>`
+                )
+                .join("")}</div>
+        </section>`;
     }
 
     open_route(event) {
         const $target = $(event.currentTarget);
         const kind = $target.data("kind");
         const target = $target.data("target");
-        if (kind === "report") {
-            frappe.set_route("query-report", target);
-        } else if (kind === "document") {
-            frappe.set_route("Form", target, $target.data("name"));
-        } else {
-            frappe.set_route("List", target);
-        }
+        if (kind === "report") frappe.set_route("query-report", target);
+        else if (kind === "document") frappe.set_route("Form", target, $target.data("name"));
+        else frappe.set_route("List", target);
     }
 
     new_doc(doctype) {
@@ -310,6 +328,10 @@ hospitality_adv.CommandCenter = class CommandCenter {
 
     is_available(doctype) {
         return Boolean(this.data?.available?.[doctype]);
+    }
+
+    count(value) {
+        return value === null || value === undefined ? "--" : frappe.format(value, { fieldtype: "Int" });
     }
 
     escape(value) {

@@ -118,6 +118,8 @@ def get_dashboard_data():
         "metrics": {
             "customers": _count("Customer"),
             "draft_quotations": _count("Quotation", {"docstatus": 0}),
+            "draft_sales_invoices": _count("Sales Invoice", {"docstatus": 0}),
+            "draft_purchase_invoices": _count("Purchase Invoice", {"docstatus": 0}),
             "receivables": _count("Sales Invoice", sales_invoice_filters),
             "payables": _count("Purchase Invoice", purchase_invoice_filters),
             "open_purchase_orders": _count("Purchase Order", {"docstatus": 1}),
@@ -133,12 +135,8 @@ def get_dashboard_data():
         },
         "pending": {
             "quotations": _recent("Quotation", {"docstatus": 0}, "customer_name", "grand_total"),
-            "sales_invoices": _recent(
-                "Sales Invoice", sales_invoice_filters, "customer_name", "outstanding_amount"
-            ),
-            "purchase_invoices": _recent(
-                "Purchase Invoice", purchase_invoice_filters, "supplier_name", "outstanding_amount"
-            ),
+            "sales_invoices": _recent("Sales Invoice", {"docstatus": 0}, "customer_name", "grand_total"),
+            "purchase_invoices": _recent("Purchase Invoice", {"docstatus": 0}, "supplier_name", "grand_total"),
             "hospitality_tasks": _recent(
                 "Hospitality ADV Operation Task",
                 {"status": ["not in", ["Done", "Cancelled"]]},

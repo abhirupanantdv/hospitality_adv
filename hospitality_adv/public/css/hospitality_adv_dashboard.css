@@ -1,74 +1,178 @@
-.hospitality-adv-dashboard {
-    --had-ink: #25313d;
-    --had-muted: #6a7785;
-    --had-line: #dce3ea;
+.had-shell {
+    --had-ink: #263342;
+    --had-muted: #687789;
+    --had-line: #dce5ee;
     --had-surface: #ffffff;
-    --had-canvas: #f4f7fa;
-    --had-teal: #0f766e;
-    --had-green: #2f855a;
-    --had-amber: #b7791f;
-    --had-rose: #c2415b;
+    --had-canvas: #edf4fa;
+    --had-slate: #4e5d70;
+    --had-teal: #257d7c;
+    --had-violet: #7653a4;
+    --had-amber: #bc7a28;
+    --had-rose: #d24b61;
+    background: var(--had-canvas);
     color: var(--had-ink);
-    max-width: 1540px;
-    padding: 4px 0 24px;
-}
-
-.hospitality-adv-dashboard button {
-    font: inherit;
-}
-
-.had-metrics {
     display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(6, minmax(140px, 1fr));
-    margin-bottom: 18px;
+    gap: 18px;
+    grid-template-columns: 270px minmax(0, 1fr) 280px;
+    max-width: 1600px;
+    min-height: calc(100vh - 150px);
+    padding: 18px;
 }
 
-.had-metric,
-.had-command,
-.had-list-row {
-    background: var(--had-surface);
+.had-shell button { font: inherit; }
+
+.had-left-rail,
+.had-right-rail,
+.had-main-stage {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+    min-width: 0;
+}
+
+.had-priority-panel,
+.had-kpi-panel,
+.had-pending-panel,
+.had-directory-panel,
+.had-analytics-panel,
+.had-status-panel,
+.had-insight-panel,
+.had-schedule-panel {
     border: 1px solid var(--had-line);
     border-radius: 8px;
-    color: var(--had-ink);
-    text-align: left;
-    transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    padding: 18px;
 }
 
-.had-metric {
-    align-items: flex-start;
+.had-priority-panel {
+    background: var(--had-slate);
+    border: 0;
+    color: #f8fbff;
+    display: grid;
+    gap: 14px;
+    min-height: 148px;
+}
+
+.had-panel-title,
+.had-section-head {
+    align-items: center;
     display: flex;
-    flex-direction: column;
+    gap: 8px;
     justify-content: space-between;
-    min-height: 96px;
-    padding: 16px;
 }
 
-.had-metric:nth-child(2) { border-top: 3px solid var(--had-amber); }
-.had-metric:nth-child(3) { border-top: 3px solid var(--had-teal); }
-.had-metric:nth-child(4) { border-top: 3px solid var(--had-rose); }
-.had-metric:nth-child(5) { border-top: 3px solid var(--had-green); }
-.had-metric:nth-child(6) { border-top: 3px solid #5969b3; }
+.had-panel-title h2,
+.had-panel-title h3,
+.had-section-head h3 {
+    font-size: 15px;
+    font-weight: 650;
+    margin: 0;
+}
 
-.had-metric span,
-.had-command small,
-.had-list-row small,
-.had-empty-state {
-    color: var(--had-muted);
+.had-title-mark,
+.had-module-mark,
+.had-live-dot,
+.had-alert-dot,
+.had-schedule-dot {
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 auto;
+}
+
+.had-title-mark { background: #ed9b40; height: 10px; width: 10px; }
+.had-module-mark { background: var(--had-teal); height: 10px; width: 10px; }
+.had-live-dot { background: #f1bd4e; height: 8px; width: 8px; }
+.had-alert-dot { background: var(--had-rose); height: 10px; width: 10px; }
+.had-schedule-dot { background: #7caee8; height: 8px; margin-top: 5px; width: 8px; }
+
+.had-priority-panel strong { font-size: 15px; }
+
+.had-link-button {
+    background: transparent;
+    border: 0;
+    color: inherit;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
+    justify-self: start;
+    padding: 0;
 }
 
-.had-metric strong {
-    font-size: 26px;
-    line-height: 1.1;
+.had-kpi-panel,
+.had-pending-panel,
+.had-directory-panel,
+.had-analytics-panel { background: var(--had-surface); }
+
+.had-kpi-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 14px;
+}
+
+.had-kpi-tile {
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    display: grid;
+    gap: 7px;
+    min-height: 128px;
+    padding: 14px;
+    text-align: left;
+}
+
+.had-kpi-accounting { background: #31596a; }
+.had-kpi-operations { background: var(--had-violet); }
+.had-kpi-tile span { font-size: 11px; font-weight: 650; text-transform: uppercase; }
+.had-kpi-tile strong { font-size: 26px; }
+.had-kpi-tile small { color: rgba(255,255,255,.76); font-size: 11px; }
+
+.had-section-head { margin-bottom: 12px; }
+.had-section-head h3 { font-size: 14px; }
+.had-section-head span { color: var(--had-muted); font-size: 12px; }
+
+.had-pending-list { display: grid; gap: 5px; }
+
+.had-pending-row {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #edf1f5;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 56px;
+    padding: 7px 0;
+    text-align: left;
+    width: 100%;
+}
+
+.had-pending-row:last-child { border-bottom: 0; }
+.had-row-copy { display: grid; gap: 2px; min-width: 0; }
+.had-row-copy strong { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.had-row-copy small { color: var(--had-muted); font-size: 11px; }
+.had-pending-row b { color: var(--had-rose); font-size: 12px; white-space: nowrap; }
+.had-empty-state { color: var(--had-muted); font-size: 12px; padding: 18px 0; text-align: center; }
+
+.had-directory-panel { min-height: 420px; }
+.had-directory-head { margin-bottom: 18px; }
+.had-directory-head > div { display: grid; gap: 12px; }
+
+.had-recent-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.had-recent-chip {
+    background: #f1f5f8;
+    border: 1px solid #e1e9ef;
+    border-radius: 999px;
+    color: var(--had-ink);
+    font-size: 12px;
+    min-height: 30px;
+    padding: 0 12px;
 }
 
 .had-tabs {
     border-bottom: 1px solid var(--had-line);
     display: flex;
     gap: 4px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     overflow-x: auto;
 }
 
@@ -77,170 +181,109 @@
     border: 0;
     border-bottom: 2px solid transparent;
     color: var(--had-muted);
-    min-height: 42px;
-    padding: 0 14px;
+    font-size: 13px;
+    min-height: 38px;
+    padding: 0 12px;
     white-space: nowrap;
 }
 
-.had-tab:hover,
-.had-tab.is-active {
-    border-bottom-color: var(--had-teal);
-    color: var(--had-ink);
-    font-weight: 600;
-}
+.had-tab.is-active { border-bottom-color: var(--had-ink); color: var(--had-ink); font-weight: 650; }
 
-.had-overview,
-.had-module {
+.had-directory-grid {
     display: grid;
-    gap: 18px;
-}
-
-.had-work-grid {
-    display: grid;
-    gap: 18px;
+    gap: 12px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.had-panel,
-.had-module-header {
-    background: var(--had-surface);
-    border: 1px solid var(--had-line);
+.had-directory-card {
+    align-items: center;
+    background: #fbfcfd;
+    border: 1px solid #e3e9ef;
     border-radius: 8px;
-    padding: 18px;
-}
-
-.had-module-header {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    gap: 18px;
-}
-
-.had-module-header h2,
-.had-section-heading h3 {
     color: var(--had-ink);
-    font-size: 15px;
-    font-weight: 650;
-    margin: 0;
-}
-
-.had-inline-metrics {
-    display: flex;
-    gap: 10px;
-    max-width: 560px;
-}
-
-.had-inline-metrics .had-metric {
-    min-height: 76px;
-    min-width: 180px;
-    padding: 12px;
-}
-
-.had-inline-metrics .had-metric strong {
-    font-size: 20px;
-}
-
-.had-section-heading {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 14px;
-}
-
-.had-command-grid {
     display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.had-command {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    min-height: 66px;
+    gap: 7px;
+    justify-items: center;
+    min-height: 112px;
     padding: 14px;
-}
-
-.had-command span {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.had-list {
-    display: grid;
-    gap: 8px;
-}
-
-.had-list-row {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    min-height: 58px;
-    padding: 10px 12px;
-}
-
-.had-list-row span {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-}
-
-.had-list-row strong {
-    font-size: 13px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.had-list-row b {
-    color: var(--had-rose);
-    font-size: 12px;
-    margin-left: 10px;
-    white-space: nowrap;
-}
-
-.had-empty-state {
-    background: var(--had-canvas);
-    border-radius: 6px;
-    padding: 18px;
     text-align: center;
 }
 
-.had-metric:hover:not(:disabled),
-.had-command:hover:not(:disabled),
-.had-list-row:hover:not(:disabled) {
-    border-color: #9eacba;
-    box-shadow: 0 4px 12px rgba(30, 45, 60, 0.08);
-    transform: translateY(-1px);
+.had-directory-card strong { font-size: 13px; }
+.had-directory-card small { color: var(--had-muted); font-size: 11px; }
+.had-directory-icon {
+    align-items: center;
+    background: #dcebed;
+    border-radius: 50%;
+    color: var(--had-teal);
+    display: flex;
+    font-size: 17px;
+    font-weight: 700;
+    height: 30px;
+    justify-content: center;
+    width: 30px;
 }
 
-.is-unavailable {
-    background: #f7f8fa;
-    color: #8a96a2;
-    cursor: not-allowed;
+.had-bottom-grid { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+.had-analytics-panel { min-height: 210px; }
+.had-bar-chart { align-items: end; display: flex; gap: 14px; height: 146px; padding: 4px 8px 0; }
+.had-bar-item { align-items: center; display: flex; flex: 1; flex-direction: column; gap: 6px; height: 100%; justify-content: end; }
+.had-bar-item i { background: #6f829d; border-radius: 5px 5px 0 0; display: block; height: var(--had-value); max-width: 54px; width: 100%; }
+.had-bar-item:nth-child(2) i { background: var(--had-teal); }
+.had-bar-item:nth-child(3) i { background: var(--had-amber); }
+.had-bar-item:nth-child(4) i { background: var(--had-violet); }
+.had-bar-item strong { font-size: 13px; }
+.had-bar-item span { color: var(--had-muted); font-size: 11px; }
+
+.had-status-panel { background: #d89985; border: 0; min-height: 210px; }
+.had-status-panel .had-section-head { color: #fff; }
+.had-status-panel .had-section-head span { color: rgba(255,255,255,.8); }
+.had-status-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.had-status-tile { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.38); border-radius: 8px; color: #fff; display: grid; gap: 8px; min-height: 70px; padding: 12px; text-align: left; }
+.had-status-tile strong { font-size: 24px; }
+.had-status-tile span { font-size: 11px; }
+
+.had-insight-panel { background: #eef0fa; min-height: 236px; }
+.had-insight-score { font-size: 34px; font-weight: 700; line-height: 1; margin: 28px 0 6px; }
+.had-insight-score small { font-size: 17px; }
+.had-insight-caption { color: var(--had-muted); font-size: 12px; }
+.had-insight-lines { display: grid; gap: 11px; margin-top: 20px; }
+.had-insight-lines > div { border-top: 1px solid #d9dfeb; display: flex; justify-content: space-between; padding-top: 10px; }
+.had-insight-lines span { color: var(--had-muted); font-size: 12px; }
+.had-insight-lines strong { font-size: 14px; }
+
+.had-schedule-panel { background: var(--had-slate); border: 0; color: #fff; }
+.had-schedule-list { display: grid; gap: 10px; margin-top: 16px; }
+.had-schedule-list > div { display: flex; gap: 10px; }
+.had-schedule-list p { display: grid; gap: 2px; margin: 0; }
+.had-schedule-list strong { font-size: 13px; }
+.had-schedule-list small { color: rgba(255,255,255,.72); font-size: 11px; }
+
+.had-directory-card:hover:not(:disabled),
+.had-pending-row:hover:not(:disabled),
+.had-kpi-tile:hover:not(:disabled),
+.had-status-tile:hover:not(:disabled),
+.had-recent-chip:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(31, 47, 64, .13); transform: translateY(-1px); }
+
+.had-shell button:not(:disabled) { cursor: pointer; transition: box-shadow 120ms ease, transform 120ms ease, border-color 120ms ease; }
+.had-shell button:disabled, .is-unavailable { cursor: not-allowed; opacity: .55; }
+.had-shell.is-loading { opacity: .58; pointer-events: none; }
+
+@media (max-width: 1380px) {
+    .had-shell { grid-template-columns: 240px minmax(0, 1fr); }
+    .had-right-rail { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-.hospitality-adv-dashboard.is-loading {
-    opacity: 0.58;
-    pointer-events: none;
+@media (max-width: 960px) {
+    .had-shell { grid-template-columns: 1fr; }
+    .had-left-rail, .had-right-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .had-priority-panel, .had-kpi-panel, .had-pending-panel { height: 100%; }
 }
 
-@media (max-width: 1200px) {
-    .had-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .had-work-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 760px) {
-    .had-metrics,
-    .had-command-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .had-module-header { align-items: flex-start; flex-direction: column; }
-    .had-inline-metrics { max-width: none; width: 100%; }
-    .had-inline-metrics .had-metric { min-width: 0; width: 50%; }
-}
-
-@media (max-width: 480px) {
-    .had-metrics,
-    .had-command-grid { grid-template-columns: 1fr; }
-    .had-inline-metrics { flex-direction: column; }
-    .had-inline-metrics .had-metric { width: 100%; }
+@media (max-width: 640px) {
+    .had-shell { gap: 12px; padding: 12px; }
+    .had-left-rail, .had-right-rail, .had-bottom-grid { grid-template-columns: 1fr; }
+    .had-directory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .had-directory-card { min-height: 98px; }
 }

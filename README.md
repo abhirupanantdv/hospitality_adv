@@ -49,3 +49,16 @@ bench --site your-site.local clear-cache
 
 For an existing site, `bench --site your-site.local migrate` also applies the
 dashboard as the global Desk home page.
+
+## Demo Data
+
+Create idempotent Hospitality ADV demo data, plus safe ERPNext and HRMS draft
+records when those apps are installed:
+
+```bash
+bench --site your-site.local execute hospitality_adv.demo.seed_demo_data
+```
+
+The demo command does not submit invoices, purchase orders, stock entries, or
+payroll documents. Submit those documents through ERPNext only after the company,
+accounts, warehouses, and taxes are configured.
