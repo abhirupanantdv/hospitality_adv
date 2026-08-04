@@ -5,6 +5,9 @@ app_description = "Backend DocTypes and APIs for Hospitality ADV."
 app_email = "admin@example.com"
 app_license = "MIT"
 
+after_install = "hospitality_adv.install.after_install"
+before_uninstall = "hospitality_adv.install.before_uninstall"
+
 fixtures = [
     {"dt": "Role", "filters": [["name", "in", ["Hotel Operations Manager", "Front Desk Agent", "Housekeeping Supervisor", "Security Operator"]]]},
 ]

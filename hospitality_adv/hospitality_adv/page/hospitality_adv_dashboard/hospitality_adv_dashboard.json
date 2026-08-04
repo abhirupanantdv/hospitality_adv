@@ -1,0 +1,56 @@
+{
+ "doctype": "Page",
+ "icon": "fa fa-dashboard",
+ "module": "Hospitality ADV",
+ "name": "hospitality-adv-dashboard",
+ "page_name": "hospitality-adv-dashboard",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Hotel Operations Manager"
+  },
+  {
+   "role": "Front Desk Agent"
+  },
+  {
+   "role": "Housekeeping Supervisor"
+  },
+  {
+   "role": "Security Operator"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Purchase Manager"
+  },
+  {
+   "role": "Purchase User"
+  },
+  {
+   "role": "Sales Manager"
+  },
+  {
+   "role": "Sales User"
+  },
+  {
+   "role": "Stock Manager"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "HR Manager"
+  },
+  {
+   "role": "HR User"
+  }
+ ],
+ "standard": "Yes",
+ "title": "Hospitality ADV"
+}

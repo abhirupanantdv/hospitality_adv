@@ -33,3 +33,16 @@ Whitelisted methods live in `hospitality_adv.api` and expose dashboard, reservat
 Frappe Desk provides the administrative UI for the installed DocTypes. The optional
 API methods are retained for integrations but no separate frontend is included.
 
+## Desk Dashboard
+
+The default Desk route is `hospitality-adv-dashboard`. It provides a single-page
+command center for accounting, buying, selling, stock, HRMS, and Hospitality ADV
+DocTypes. Cards are shown only when the logged-in user has access to the related
+DocType; ERPNext and HRMS content is therefore available when those apps are installed.
+
+After installing or updating the app, build its Desk assets before signing in:
+
+```bash
+bench build --app hospitality_adv
+bench --site your-site.local clear-cache
+```
