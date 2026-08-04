@@ -1,9 +1,9 @@
 [project]
-name = "adv_hospitality_backend"
+name = "hospitality_adv"
 authors = [
-  { name = "ADV Hospitality Suite", email = "admin@example.com" }
+  { name = "Hospitality ADV", email = "admin@example.com" }
 ]
-description = "ERPNext/Frappe backend app for ADV Hospitality Suite hotel operations."
+description = "ERPNext/Frappe backend app for Hospitality ADV hotel operations."
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]

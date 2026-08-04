@@ -1,0 +1,162 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "task_type",
+  "property",
+  "room",
+  "guest",
+  "reservation",
+  "subject",
+  "description",
+  "priority",
+  "status",
+  "assigned_to",
+  "due_datetime",
+  "completed_on"
+ ],
+ "fields": [
+  {
+   "label": "Task Type",
+   "fieldname": "task_type",
+   "fieldtype": "Select",
+   "options": "Housekeeping\nMaintenance\nRegular Check\nGuest Request\nSecurity\nInternet\nFront Desk",
+   "reqd": 1,
+   "idx": 1
+  },
+  {
+   "label": "Property",
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "options": "Hospitality ADV Property",
+   "idx": 2
+  },
+  {
+   "label": "Room",
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "options": "Hospitality ADV Room",
+   "idx": 3
+  },
+  {
+   "label": "Guest",
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "options": "Hospitality ADV Guest",
+   "idx": 4
+  },
+  {
+   "label": "Reservation",
+   "fieldname": "reservation",
+   "fieldtype": "Link",
+   "options": "Hospitality ADV Reservation",
+   "idx": 5
+  },
+  {
+   "label": "Subject",
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "idx": 6
+  },
+  {
+   "label": "Description",
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "idx": 7
+  },
+  {
+   "label": "Priority",
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "options": "Low\nMedium\nHigh\nUrgent",
+   "default": "Medium",
+   "idx": 8
+  },
+  {
+   "label": "Status",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Open\nAssigned\nIn Progress\nBlocked\nDone\nCancelled",
+   "default": "Open",
+   "idx": 9
+  },
+  {
+   "label": "Assigned To",
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "options": "User",
+   "idx": 10
+  },
+  {
+   "label": "Due Datetime",
+   "fieldname": "due_datetime",
+   "fieldtype": "Datetime",
+   "idx": 11
+  },
+  {
+   "label": "Completed On",
+   "fieldname": "completed_on",
+   "fieldtype": "Datetime",
+   "idx": 12
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "Hospitality ADV",
+ "name": "Hospitality ADV Operation Task",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:HADV-TASK-.#####",
+ "title_field": "subject"
+}

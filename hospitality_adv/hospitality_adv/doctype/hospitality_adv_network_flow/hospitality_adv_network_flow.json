@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "host_ip",
+  "destination_ip",
+  "protocol",
+  "port_service",
+  "total_bytes",
+  "connections",
+  "in_bytes",
+  "out_bytes"
+ ],
+ "fields": [
+  {
+   "label": "Host IP",
+   "fieldname": "host_ip",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "idx": 1
+  },
+  {
+   "label": "Destination IP",
+   "fieldname": "destination_ip",
+   "fieldtype": "Data",
+   "idx": 2
+  },
+  {
+   "label": "Protocol",
+   "fieldname": "protocol",
+   "fieldtype": "Select",
+   "options": "tcp\nudp\nicmp\nother",
+   "idx": 3
+  },
+  {
+   "label": "Port Service",
+   "fieldname": "port_service",
+   "fieldtype": "Data",
+   "idx": 4
+  },
+  {
+   "label": "Total Bytes",
+   "fieldname": "total_bytes",
+   "fieldtype": "Float",
+   "idx": 5
+  },
+  {
+   "label": "Connections",
+   "fieldname": "connections",
+   "fieldtype": "Int",
+   "idx": 6
+  },
+  {
+   "label": "In Bytes",
+   "fieldname": "in_bytes",
+   "fieldtype": "Float",
+   "idx": 7
+  },
+  {
+   "label": "Out Bytes",
+   "fieldname": "out_bytes",
+   "fieldtype": "Float",
+   "idx": 8
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "Hospitality ADV",
+ "name": "Hospitality ADV Network Flow",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:HADV-FLOW-.#####",
+ "title_field": "host_ip"
+}
