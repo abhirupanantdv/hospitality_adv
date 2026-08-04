@@ -203,7 +203,7 @@ def _live_charts():
     sales_labels, sales_values = _monthly_values(
         "Sales Invoice", "posting_date", "grand_total", {"docstatus": 1}
     )
-    _, purchase_values = _monthly_values(
+    purchase_labels, purchase_values = _monthly_values(
         "Purchase Invoice", "posting_date", "grand_total", {"docstatus": 1}
     )
     quote_labels, quote_values = _monthly_values(
@@ -215,7 +215,7 @@ def _live_charts():
     stock_labels, incoming_values = _monthly_values(
         "Stock Entry", "posting_date", "total_incoming_value", {"docstatus": 1}
     )
-    _, outgoing_values = _monthly_values(
+    outgoing_labels, outgoing_values = _monthly_values(
         "Stock Entry", "posting_date", "total_outgoing_value", {"docstatus": 1}
     )
     receivable_amount = sum(
