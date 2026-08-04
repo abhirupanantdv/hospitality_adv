@@ -115,6 +115,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-INT-.#####",
+ "autoname": "format:HADV-INT-.YYYY.-.#####",
  "title_field": "integration"
 }

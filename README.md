@@ -33,6 +33,10 @@ Whitelisted methods live in `hospitality_adv.api` and expose dashboard, reservat
 Frappe Desk provides the administrative UI for the installed DocTypes. The optional
 API methods are retained for integrations but no separate frontend is included.
 
+New Hospitality ADV documents use the yearly ID format
+`HADV-<TYPE>-YYYY-00001`. Existing document IDs are preserved when the app is
+updated; only records created after migration use the standardized series.
+
 ## Desk Dashboard
 
 `hospitality-adv-dashboard` provides a single-page command center for accounting,
@@ -45,6 +49,10 @@ site's global Desk home page automatically.
 finance, selling, buying, stock, HRMS, hotel operations, and Hospitality ADV POS.
 Both pages read the site's existing documents at request time. They do not insert
 or depend on sample records.
+
+Finance metrics use submitted invoices only. Paid counts require an outstanding
+amount of zero; overdue items require an outstanding amount and a due date before
+today. Aging charts group outstanding balances into 1-30, 31-60, and 61+ days.
 
 After installing or updating the app, build its Desk assets before signing in:
 

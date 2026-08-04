@@ -131,6 +131,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-ACCESS-.#####",
+ "autoname": "format:HADV-ACCESS-.YYYY.-.#####",
  "title_field": "zone"
 }

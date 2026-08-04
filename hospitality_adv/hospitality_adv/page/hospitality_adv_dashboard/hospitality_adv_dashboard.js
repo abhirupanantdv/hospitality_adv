@@ -72,7 +72,12 @@ hospitality_adv.CommandCenter = class CommandCenter {
     }
 
     priority_panel() {
-        const priority = this.data.metrics.open_hospitality_tasks || this.data.metrics.draft_quotations || 0;
+        const priority =
+            this.data.metrics.overdue_hospitality_tasks ||
+            this.data.metrics.overdue_sales_invoices ||
+            this.data.metrics.open_hospitality_tasks ||
+            this.data.metrics.draft_quotations ||
+            0;
         return `<section class="had-priority-panel">
             <div class="had-panel-title"><span class="had-title-mark"></span><h3>${__("Top Priorities")}</h3></div>
             <strong>${priority ? __("{0} items need attention", [priority]) : __("No open priorities")}</strong>
@@ -85,7 +90,7 @@ hospitality_adv.CommandCenter = class CommandCenter {
             <div class="had-panel-title"><h3>${__("Live KPIs")}</h3></div>
             <div class="had-kpi-grid">
                 ${this.kpi_tile(__("Receivables"), this.data.metrics.receivables, "had-kpi-accounting", "Sales Invoice")}
-                ${this.kpi_tile(__("Open Tasks"), this.data.metrics.open_hospitality_tasks, "had-kpi-operations", "Hospitality ADV Operation Task")}
+                ${this.kpi_tile(__("Overdue Invoices"), this.data.metrics.overdue_sales_invoices, "had-kpi-operations", "Sales Invoice")}
             </div>
         </section>`;
     }
@@ -101,12 +106,18 @@ hospitality_adv.CommandCenter = class CommandCenter {
     }
 
     pending_panel() {
-        const records = [...this.data.pending.sales_invoices, ...this.data.pending.quotations].slice(0, 5);
+        const records = [
+            ...this.data.pending.sales_invoices,
+            ...this.data.pending.hospitality_tasks,
+            ...this.data.pending.quotations,
+        ]
+            .sort((left, right) => Number(right.days_overdue || 0) - Number(left.days_overdue || 0))
+            .slice(0, 5);
         const rows = records.length
             ? records.map((record) => this.pending_row(record)).join("")
             : `<div class="had-empty-state">${__("Nothing pending")}</div>`;
         return `<section class="had-pending-panel">
-            <div class="had-section-head"><h3>${__("Pending Documents")}</h3><button class="had-link-button had-route" type="button" data-kind="doctype" data-target="Sales Invoice" data-label="${__("Sales Invoices")}">${__("View All")}</button></div>
+            <div class="had-section-head"><h3>${__("Action Queue")}</h3><button class="had-link-button had-route" type="button" data-kind="doctype" data-target="Sales Invoice" data-label="${__("Sales Invoices")}">${__("View All")}</button></div>
             <div class="had-pending-list">${rows}</div>
         </section>`;
     }
@@ -114,7 +125,7 @@ hospitality_adv.CommandCenter = class CommandCenter {
     pending_row(record) {
         return `<button class="had-pending-row had-route" type="button" data-kind="document" data-target="${this.escape(record.doctype)}" data-name="${this.escape(record.name)}" data-label="${this.escape(record.title)}">
             <span class="had-alert-dot"></span>
-            <span class="had-row-copy"><strong>${this.escape(record.title)}</strong><small>${this.escape(record.name)}</small></span>
+            <span class="had-row-copy"><strong>${this.escape(record.title)}</strong><small>${this.escape(record.name)}${record.detail ? ` - ${this.escape(record.detail)}` : ""}</small></span>
             <b>${record.amount === null || record.amount === undefined ? "" : frappe.format(record.amount, { fieldtype: "Currency" })}</b>
         </button>`;
     }
@@ -308,10 +319,10 @@ hospitality_adv.CommandCenter = class CommandCenter {
 
     analytics_panel() {
         const bars = [
-            [__("Quotes"), this.data.metrics.draft_quotations],
-            [__("Sales"), this.data.metrics.draft_sales_invoices],
-            [__("Purchase"), this.data.metrics.draft_purchase_invoices],
-            [__("Tasks"), this.data.metrics.open_hospitality_tasks],
+            [__("Paid Sales"), this.data.metrics.paid_sales_invoices],
+            [__("Overdue Sales"), this.data.metrics.overdue_sales_invoices],
+            [__("Overdue Purchase"), this.data.metrics.overdue_purchase_invoices],
+            [__("Overdue Tasks"), this.data.metrics.overdue_hospitality_tasks],
         ];
         const highest = Math.max(...bars.map(([, value]) => Number(value) || 0), 1);
         return `<section class="had-analytics-panel">
@@ -329,10 +340,10 @@ hospitality_adv.CommandCenter = class CommandCenter {
 
     status_panel() {
         const statuses = [
-            [__("Pending Quotations"), this.data.metrics.draft_quotations, "Quotation"],
-            [__("Draft Sales Invoices"), this.data.metrics.draft_sales_invoices, "Sales Invoice"],
-            [__("Draft Purchase Invoices"), this.data.metrics.draft_purchase_invoices, "Purchase Invoice"],
-            [__("Open Hospitality Tasks"), this.data.metrics.open_hospitality_tasks, "Hospitality ADV Operation Task"],
+            [__("Paid Sales Invoices"), this.data.metrics.paid_sales_invoices, "Sales Invoice"],
+            [__("Overdue Sales Invoices"), this.data.metrics.overdue_sales_invoices, "Sales Invoice"],
+            [__("Overdue Purchase Invoices"), this.data.metrics.overdue_purchase_invoices, "Purchase Invoice"],
+            [__("Overdue Operations Tasks"), this.data.metrics.overdue_hospitality_tasks, "Hospitality ADV Operation Task"],
         ];
         return `<section class="had-status-panel">
             <div class="had-section-head"><h3>${__("System Status")}</h3><span>${__("Live")}</span></div>
@@ -348,19 +359,18 @@ hospitality_adv.CommandCenter = class CommandCenter {
 
     insight_panel() {
         const total = [
-            this.data.metrics.draft_quotations,
-            this.data.metrics.draft_sales_invoices,
-            this.data.metrics.draft_purchase_invoices,
-            this.data.metrics.open_hospitality_tasks,
+            this.data.metrics.overdue_sales_invoices,
+            this.data.metrics.overdue_purchase_invoices,
+            this.data.metrics.overdue_hospitality_tasks,
         ].reduce((sum, value) => sum + (Number(value) || 0), 0);
         return `<section class="had-insight-panel">
             <div class="had-panel-title"><span class="had-live-dot"></span><h3>${__("Operations Insight")}</h3></div>
             <div class="had-insight-score">${Math.min(100, 100 - total * 3)}<small>%</small></div>
             <span class="had-insight-caption">${__("Workflow readiness")}</span>
             <div class="had-insight-lines">
-                ${this.insight_line(__("Open requests"), total)}
+                ${this.insight_line(__("Overdue items"), total)}
+                ${this.insight_line(__("Sales overdue 61+ days"), this.data.metrics.sales_overdue_61_plus)}
                 ${this.insight_line(__("Active reservations"), this.data.metrics.active_reservations)}
-                ${this.insight_line(__("Available stock items"), this.data.metrics.stock_items)}
             </div>
         </section>`;
     }

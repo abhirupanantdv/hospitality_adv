@@ -158,6 +158,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "field:room_number",
+ "autoname": "format:HADV-ROOM-.YYYY.-.#####",
  "title_field": "room_number"
 }

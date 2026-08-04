@@ -135,6 +135,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-WIFI-.#####",
+ "autoname": "format:HADV-WIFI-.YYYY.-.#####",
  "title_field": "device_name"
 }

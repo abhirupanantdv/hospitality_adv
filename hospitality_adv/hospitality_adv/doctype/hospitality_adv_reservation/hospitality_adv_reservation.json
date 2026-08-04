@@ -165,6 +165,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-RES-.#####",
+ "autoname": "format:HADV-RES-.YYYY.-.#####",
  "title_field": "guest"
 }

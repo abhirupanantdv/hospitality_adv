@@ -92,6 +92,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "field:room_type_name",
+ "autoname": "format:HADV-RTYPE-.YYYY.-.#####",
  "title_field": "room_type_name"
 }

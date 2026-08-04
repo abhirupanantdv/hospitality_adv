@@ -102,6 +102,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "field:profile_name",
+ "autoname": "format:HADV-LIFT-.YYYY.-.#####",
  "title_field": "profile_name"
 }

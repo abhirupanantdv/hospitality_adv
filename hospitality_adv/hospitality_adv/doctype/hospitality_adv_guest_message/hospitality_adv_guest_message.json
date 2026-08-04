@@ -127,6 +127,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-MSG-.#####",
+ "autoname": "format:HADV-MSG-.YYYY.-.#####",
  "title_field": "subject"
 }

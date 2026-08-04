@@ -138,6 +138,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-POS-.#####",
+ "autoname": "format:HADV-POS-.YYYY.-.#####",
  "title_field": "outlet"
 }

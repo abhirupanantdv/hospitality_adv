@@ -50,10 +50,10 @@ hospitality_adv.InsightsPage = class InsightsPage {
                 </div>
             </header>
             <section class="had-insights-metrics">
-                ${this.metric(__("Open receivables"), this.data.metrics.receivables, __("Submitted sales invoices"))}
-                ${this.metric(__("Open payables"), this.data.metrics.payables, __("Submitted purchase invoices"))}
-                ${this.metric(__("Stock items"), this.data.metrics.stock_items, __("Active catalogue"))}
-                ${this.metric(__("Open operations tasks"), this.data.metrics.open_hospitality_tasks, __("Hospitality ADV"))}
+                ${this.metric(__("Paid sales invoices"), this.data.metrics.paid_sales_invoices, __("Submitted and fully paid"))}
+                ${this.metric(__("Overdue sales invoices"), this.data.metrics.overdue_sales_invoices, __("Past due receivables"))}
+                ${this.metric(__("Overdue purchase invoices"), this.data.metrics.overdue_purchase_invoices, __("Past due payables"))}
+                ${this.metric(__("Overdue operations tasks"), this.data.metrics.overdue_hospitality_tasks, __("Past due tasks"))}
             </section>
             ${this.chart_section("finance", __("Finance"), __("Accounting"))}
             ${this.chart_section("selling", __("Selling"), __("Quotations and sales"))}

@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import add_months, flt, getdate, now_datetime, nowdate
+from frappe.utils import add_months, date_diff, flt, getdate, now_datetime, nowdate
 
 
 HOSPITALITY_DOCTYPES = [
@@ -116,7 +116,7 @@ def _month_window(months=6):
     }
 
 
-def _records(doctype, fields, filters=None, order_by=None):
+def _records(doctype, fields, filters=None, order_by=None, limit_page_length=5000):
     if not _can_read(doctype):
         return []
 
@@ -125,8 +125,176 @@ def _records(doctype, fields, filters=None, order_by=None):
         fields=fields,
         filters=filters or {},
         order_by=order_by or "modified desc",
-        limit_page_length=5000,
+        limit_page_length=limit_page_length,
     )
+
+
+def _invoice_health(doctype):
+    health = {
+        "paid_count": 0,
+        "paid_amount": 0,
+        "outstanding_count": 0,
+        "outstanding_amount": 0,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "age_1_30_count": 0,
+        "age_1_30_amount": 0,
+        "age_31_60_count": 0,
+        "age_31_60_amount": 0,
+        "age_61_plus_count": 0,
+        "age_61_plus_amount": 0,
+    }
+    required_fields = ["grand_total", "outstanding_amount", "due_date"]
+    if not all(_has_field(doctype, fieldname) for fieldname in required_fields):
+        return health
+
+    today = getdate(nowdate())
+    records = _records(doctype, required_fields, {"docstatus": 1})
+    for record in records:
+        outstanding_amount = flt(record.get("outstanding_amount"))
+        grand_total = flt(record.get("grand_total"))
+        if outstanding_amount <= 0:
+            health["paid_count"] += 1
+            health["paid_amount"] += grand_total
+            continue
+
+        health["outstanding_count"] += 1
+        health["outstanding_amount"] += outstanding_amount
+        due_date = record.get("due_date")
+        if not due_date or getdate(due_date) >= today:
+            continue
+
+        days_overdue = date_diff(today, getdate(due_date))
+        health["overdue_count"] += 1
+        health["overdue_amount"] += outstanding_amount
+        if days_overdue <= 30:
+            bucket = "age_1_30"
+        elif days_overdue <= 60:
+            bucket = "age_31_60"
+        else:
+            bucket = "age_61_plus"
+        health[f"{bucket}_count"] += 1
+        health[f"{bucket}_amount"] += outstanding_amount
+
+    return health
+
+
+def _invoice_due_detail(due_date, days_overdue):
+    if days_overdue:
+        return _("Overdue by {0} day(s)", [days_overdue])
+    if due_date:
+        return _("Due {0}", [frappe.format(due_date, {"fieldtype": "Date"})])
+    return _("No due date")
+
+
+def _outstanding_invoices(doctype, title_field, limit=5):
+    required_fields = [title_field, "grand_total", "outstanding_amount", "due_date"]
+    if not all(_has_field(doctype, fieldname) for fieldname in required_fields):
+        return []
+
+    today = getdate(nowdate())
+    records = _records(
+        doctype,
+        ["name", title_field, "outstanding_amount", "due_date"],
+        {"docstatus": 1, "outstanding_amount": [">", 0]},
+        "due_date asc",
+        limit_page_length=20,
+    )
+    results = []
+    for record in records:
+        due_date = record.get("due_date")
+        days_overdue = date_diff(today, getdate(due_date)) if due_date and getdate(due_date) < today else 0
+        results.append(
+            {
+                "doctype": doctype,
+                "name": record.name,
+                "title": record.get(title_field) or record.name,
+                "amount": flt(record.get("outstanding_amount")),
+                "status": _("Overdue") if days_overdue else _("Outstanding"),
+                "detail": _invoice_due_detail(due_date, days_overdue),
+                "days_overdue": days_overdue,
+            }
+        )
+
+    return sorted(results, key=lambda record: (-record["days_overdue"], record["name"]))[:limit]
+
+
+def _task_due_summary():
+    summary = {
+        "open_count": 0,
+        "overdue_count": 0,
+        "due_today_count": 0,
+        "due_next_7_count": 0,
+        "without_due_date_count": 0,
+    }
+    if not _has_field("Hospitality ADV Operation Task", "due_datetime"):
+        return summary
+
+    today = getdate(nowdate())
+    records = _records(
+        "Hospitality ADV Operation Task",
+        ["due_datetime"],
+        {"status": ["not in", ["Done", "Cancelled"]]},
+    )
+    for record in records:
+        summary["open_count"] += 1
+        due_datetime = record.get("due_datetime")
+        if not due_datetime:
+            summary["without_due_date_count"] += 1
+            continue
+
+        due_date = getdate(due_datetime)
+        if due_date < today:
+            summary["overdue_count"] += 1
+        elif due_date == today:
+            summary["due_today_count"] += 1
+        elif date_diff(due_date, today) <= 7:
+            summary["due_next_7_count"] += 1
+
+    return summary
+
+
+def _task_due_detail(due_date, days_overdue, today):
+    if days_overdue:
+        return _("Overdue by {0} day(s)", [days_overdue])
+    if due_date == today:
+        return _("Due today")
+    if not due_date:
+        return _("No due date")
+    return _("Due later")
+
+
+def _pending_tasks(limit=5):
+    required_fields = ["subject", "due_datetime"]
+    if not all(_has_field("Hospitality ADV Operation Task", fieldname) for fieldname in required_fields):
+        return []
+
+    today = getdate(nowdate())
+    records = _records(
+        "Hospitality ADV Operation Task",
+        ["name", "subject", "status", "due_datetime"],
+        {"status": ["not in", ["Done", "Cancelled"]]},
+        "due_datetime asc",
+        limit_page_length=20,
+    )
+    results = []
+    for record in records:
+        due_datetime = record.get("due_datetime")
+        due_date = getdate(due_datetime) if due_datetime else None
+        days_overdue = date_diff(today, due_date) if due_date and due_date < today else 0
+        results.append(
+            {
+                "doctype": "Hospitality ADV Operation Task",
+                "name": record.name,
+                "title": record.get("subject") or record.name,
+                "status": _("Overdue") if days_overdue else record.get("status") or _("Open"),
+                "detail": _task_due_detail(due_date, days_overdue, today),
+                "amount": None,
+                "days_overdue": days_overdue,
+            }
+        )
+
+    return sorted(results, key=lambda record: (-record["days_overdue"], record["name"]))[:limit]
 
 
 def _monthly_values(doctype, date_field, value_field=None, filters=None, months=6):
@@ -199,11 +367,11 @@ def _status_chart(title, doctype, status_field="status", filters=None, colors=No
     )
 
 
-def _live_charts():
+def _live_charts(invoice_health, task_summary):
     sales_labels, sales_values = _monthly_values(
         "Sales Invoice", "posting_date", "grand_total", {"docstatus": 1}
     )
-    purchase_labels, purchase_values = _monthly_values(
+    _purchase_labels, purchase_values = _monthly_values(
         "Purchase Invoice", "posting_date", "grand_total", {"docstatus": 1}
     )
     quote_labels, quote_values = _monthly_values(
@@ -215,22 +383,9 @@ def _live_charts():
     stock_labels, incoming_values = _monthly_values(
         "Stock Entry", "posting_date", "total_incoming_value", {"docstatus": 1}
     )
-    outgoing_labels, outgoing_values = _monthly_values(
+    _outgoing_labels, outgoing_values = _monthly_values(
         "Stock Entry", "posting_date", "total_outgoing_value", {"docstatus": 1}
     )
-    receivable_amount = sum(
-        flt(record.get("outstanding_amount"))
-        for record in _records(
-            "Sales Invoice", ["outstanding_amount"], {"docstatus": 1, "outstanding_amount": [">", 0]}
-        )
-    )
-    payable_amount = sum(
-        flt(record.get("outstanding_amount"))
-        for record in _records(
-            "Purchase Invoice", ["outstanding_amount"], {"docstatus": 1, "outstanding_amount": [">", 0]}
-        )
-    )
-
     return {
         "operations": [
             _single_series_chart(
@@ -245,6 +400,22 @@ def _live_charts():
                 _("Operations Task Status"),
                 "Hospitality ADV Operation Task",
                 colors=["#257d7c", "#7653a4", "#bc7a28", "#d24b61", "#6f829d", "#5e9bbf"],
+            ),
+            _chart(
+                _("Open Task Due Dates"),
+                [_("Overdue"), _("Due Today"), _("Next 7 Days"), _("No Due Date")],
+                [
+                    {
+                        "values": [
+                            task_summary["overdue_count"],
+                            task_summary["due_today_count"],
+                            task_summary["due_next_7_count"],
+                            task_summary["without_due_date_count"],
+                        ]
+                    }
+                ],
+                "bar",
+                ["#d24b61"],
             ),
         ],
         "finance": [
@@ -262,9 +433,41 @@ def _live_charts():
             _chart(
                 _("Outstanding Exposure"),
                 [_("Receivables"), _("Payables")],
-                [{"values": [receivable_amount, payable_amount]}],
+                [
+                    {
+                        "values": [
+                            invoice_health["sales"]["outstanding_amount"],
+                            invoice_health["purchase"]["outstanding_amount"],
+                        ]
+                    }
+                ],
                 "bar",
                 ["#7653a4"],
+                value_format="Currency",
+            ),
+            _chart(
+                _("Overdue Invoice Aging"),
+                [_("1-30 Days"), _("31-60 Days"), _("61+ Days")],
+                [
+                    {
+                        "name": _("Sales Invoices"),
+                        "values": [
+                            invoice_health["sales"]["age_1_30_amount"],
+                            invoice_health["sales"]["age_31_60_amount"],
+                            invoice_health["sales"]["age_61_plus_amount"],
+                        ],
+                    },
+                    {
+                        "name": _("Purchase Invoices"),
+                        "values": [
+                            invoice_health["purchase"]["age_1_30_amount"],
+                            invoice_health["purchase"]["age_31_60_amount"],
+                            invoice_health["purchase"]["age_61_plus_amount"],
+                        ],
+                    },
+                ],
+                "bar",
+                ["#d24b61", "#bc7a28"],
                 value_format="Currency",
             ),
         ],
@@ -360,21 +563,38 @@ def get_dashboard_data():
         frappe.throw(_("Login is required."), frappe.PermissionError)
 
     available = {doctype: _can_read(doctype) for doctype in CORE_DOCTYPES + HOSPITALITY_DOCTYPES}
-    sales_invoice_filters = {"docstatus": 1, "outstanding_amount": [">", 0]}
-    purchase_invoice_filters = {"docstatus": 1, "outstanding_amount": [">", 0]}
+    invoice_health = {
+        "sales": _invoice_health("Sales Invoice"),
+        "purchase": _invoice_health("Purchase Invoice"),
+    }
+    task_summary = _task_due_summary()
 
     return {
         "generated_at": now_datetime(),
         "available": available,
         "reports": {report: bool(frappe.db.exists("Report", report)) for report in REPORTS},
-        "charts": _live_charts(),
+        "charts": _live_charts(invoice_health, task_summary),
+        "financials": invoice_health,
+        "task_summary": task_summary,
         "metrics": {
             "customers": _count("Customer"),
             "draft_quotations": _count("Quotation", {"docstatus": 0}),
             "draft_sales_invoices": _count("Sales Invoice", {"docstatus": 0}),
             "draft_purchase_invoices": _count("Purchase Invoice", {"docstatus": 0}),
-            "receivables": _count("Sales Invoice", sales_invoice_filters),
-            "payables": _count("Purchase Invoice", purchase_invoice_filters),
+            "receivables": invoice_health["sales"]["outstanding_count"],
+            "receivable_amount": invoice_health["sales"]["outstanding_amount"],
+            "paid_sales_invoices": invoice_health["sales"]["paid_count"],
+            "paid_sales_amount": invoice_health["sales"]["paid_amount"],
+            "overdue_sales_invoices": invoice_health["sales"]["overdue_count"],
+            "overdue_sales_amount": invoice_health["sales"]["overdue_amount"],
+            "sales_overdue_1_30": invoice_health["sales"]["age_1_30_count"],
+            "sales_overdue_31_60": invoice_health["sales"]["age_31_60_count"],
+            "sales_overdue_61_plus": invoice_health["sales"]["age_61_plus_count"],
+            "payables": invoice_health["purchase"]["outstanding_count"],
+            "payable_amount": invoice_health["purchase"]["outstanding_amount"],
+            "paid_purchase_invoices": invoice_health["purchase"]["paid_count"],
+            "overdue_purchase_invoices": invoice_health["purchase"]["overdue_count"],
+            "overdue_purchase_amount": invoice_health["purchase"]["overdue_amount"],
             "open_purchase_orders": _count("Purchase Order", {"docstatus": 1}),
             "stock_items": _count("Item", {"disabled": 0}),
             "active_employees": _count("Employee", {"status": "Active"}),
@@ -382,16 +602,14 @@ def get_dashboard_data():
             "active_reservations": _count(
                 "Hospitality ADV Reservation", {"status": ["in", ["Confirmed", "Checked In"]]}
             ),
-            "open_hospitality_tasks": _count("Hospitality ADV Operation Task", {"status": ["not in", ["Done", "Cancelled"]]}),
+            "open_hospitality_tasks": task_summary["open_count"],
+            "overdue_hospitality_tasks": task_summary["overdue_count"],
+            "hospitality_tasks_due_today": task_summary["due_today_count"],
         },
         "pending": {
             "quotations": _recent("Quotation", {"docstatus": 0}, "customer_name", "grand_total"),
-            "sales_invoices": _recent("Sales Invoice", {"docstatus": 0}, "customer_name", "grand_total"),
-            "purchase_invoices": _recent("Purchase Invoice", {"docstatus": 0}, "supplier_name", "grand_total"),
-            "hospitality_tasks": _recent(
-                "Hospitality ADV Operation Task",
-                {"status": ["not in", ["Done", "Cancelled"]]},
-                "subject",
-            ),
+            "sales_invoices": _outstanding_invoices("Sales Invoice", "customer_name"),
+            "purchase_invoices": _outstanding_invoices("Purchase Invoice", "supplier_name"),
+            "hospitality_tasks": _pending_tasks(),
         },
     }

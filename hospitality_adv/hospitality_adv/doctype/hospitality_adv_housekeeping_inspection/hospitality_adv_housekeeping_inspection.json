@@ -121,6 +121,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-HK-.#####",
+ "autoname": "format:HADV-HK-.YYYY.-.#####",
  "title_field": "room"
 }

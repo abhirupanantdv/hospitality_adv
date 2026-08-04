@@ -126,6 +126,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "field:property_name",
+ "autoname": "format:HADV-PROP-.YYYY.-.#####",
  "title_field": "property_name"
 }

@@ -108,6 +108,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "field:channel",
+ "autoname": "format:HADV-OTA-.YYYY.-.#####",
  "title_field": "channel"
 }

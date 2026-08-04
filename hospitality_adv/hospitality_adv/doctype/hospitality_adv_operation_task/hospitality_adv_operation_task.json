@@ -157,6 +157,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:HADV-TASK-.#####",
+ "autoname": "format:HADV-TASK-.YYYY.-.#####",
  "title_field": "subject"
 }
