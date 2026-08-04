@@ -234,6 +234,14 @@
 .had-live-chart { min-height: 230px; overflow: hidden; }
 .had-live-chart .chart-container { margin: 0; width: 100%; }
 .had-chart-empty { align-items: center; color: var(--had-muted); display: flex; font-size: 12px; height: 230px; justify-content: center; text-align: center; }
+.had-zero-state { align-content: center; color: var(--had-muted); display: grid; gap: 10px; height: 230px; justify-items: center; text-align: center; }
+.had-zero-state > strong { color: var(--had-ink); font-size: 34px; line-height: 1; }
+.had-zero-state > span { font-size: 12px; }
+.had-zero-labels { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 100%; }
+.had-zero-labels span { background: #f1f5f8; border: 1px solid #e1e9ef; border-radius: 5px; color: var(--had-muted); display: grid; font-size: 10px; gap: 3px; min-width: 72px; padding: 6px 8px; }
+.had-zero-labels b { color: var(--had-ink); font-size: 13px; }
+.had-tab-chart-card:nth-child(3):last-child,
+.had-insight-chart-card:nth-child(3):last-child { grid-column: 1 / -1; }
 
 .had-bottom-grid { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 

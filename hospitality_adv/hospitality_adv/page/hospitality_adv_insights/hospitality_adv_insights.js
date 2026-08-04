@@ -99,7 +99,7 @@ hospitality_adv.InsightsPage = class InsightsPage {
     render_chart(element, chart) {
         const values = chart?.data?.datasets?.flatMap((dataset) => dataset.values || []) || [];
         if (!chart || !values.some((value) => Number(value))) {
-            $(element).html(`<div class="had-chart-empty">${this.escape(chart?.empty_message || __("No accessible data yet."))}</div>`);
+            $(element).html(this.zero_chart(chart));
             return;
         }
 
@@ -113,15 +113,35 @@ hospitality_adv.InsightsPage = class InsightsPage {
                 barOptions: { spaceRatio: 0.35 },
                 lineOptions: { regionFill: 1, hideDots: 0 },
                 tooltipOptions: {
-                    formatTooltipY: (value) =>
-                        frappe.format(value, { fieldtype: chart.value_format === "Currency" ? "Currency" : "Int" }),
+                    formatTooltipY: (value) => this.format_chart_value(value, chart),
                 },
                 valuesOverPoints: 0,
             });
         } catch (error) {
             console.error("Unable to render Hospitality ADV chart", error);
-            $(element).html(`<div class="had-chart-empty">${this.escape(__("Chart unavailable."))}</div>`);
+            $(element).html(this.zero_chart(chart));
         }
+    }
+
+    zero_chart(chart) {
+        const labels = chart?.data?.labels || [];
+        const visible_labels = labels.slice(0, 4);
+        return `<div class="had-zero-state">
+            <strong>0</strong>
+            <span>${this.escape(chart?.empty_message || __("No records in this view."))}</span>
+            <div class="had-zero-labels">${visible_labels
+                .map((label) => `<span><b>0</b>${this.escape(label)}</span>`)
+                .join("")}</div>
+        </div>`;
+    }
+
+    format_chart_value(value, chart) {
+        const numeric_value = Number(value) || 0;
+        const formatted_value = new Intl.NumberFormat(undefined, {
+            maximumFractionDigits: chart.value_format === "Currency" ? 2 : 0,
+        }).format(numeric_value);
+        const currency = frappe.boot?.sysdefaults?.currency;
+        return chart.value_format === "Currency" && currency ? `${currency} ${formatted_value}` : formatted_value;
     }
 
     count(value) {
