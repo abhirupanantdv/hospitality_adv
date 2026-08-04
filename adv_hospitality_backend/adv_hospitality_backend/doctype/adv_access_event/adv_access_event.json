@@ -1,0 +1,136 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "credential_id",
+  "identity_type",
+  "guest",
+  "employee",
+  "room",
+  "zone",
+  "event_time",
+  "result",
+  "controller"
+ ],
+ "fields": [
+  {
+   "label": "Credential ID",
+   "fieldname": "credential_id",
+   "fieldtype": "Data",
+   "idx": 1
+  },
+  {
+   "label": "Identity Type",
+   "fieldname": "identity_type",
+   "fieldtype": "Select",
+   "options": "Guest\nEmployee\nVendor\nSystem",
+   "default": "Guest",
+   "idx": 2
+  },
+  {
+   "label": "Guest",
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "options": "ADV Guest",
+   "idx": 3
+  },
+  {
+   "label": "Employee",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "options": "Employee",
+   "idx": 4
+  },
+  {
+   "label": "Room",
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "options": "ADV Room",
+   "idx": 5
+  },
+  {
+   "label": "Zone",
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "idx": 6
+  },
+  {
+   "label": "Event Time",
+   "fieldname": "event_time",
+   "fieldtype": "Datetime",
+   "idx": 7
+  },
+  {
+   "label": "Result",
+   "fieldname": "result",
+   "fieldtype": "Select",
+   "options": "Granted\nDenied\nAlert",
+   "default": "Granted",
+   "idx": 8
+  },
+  {
+   "label": "Controller",
+   "fieldname": "controller",
+   "fieldtype": "Data",
+   "idx": 9
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "ADV Hospitality Backend",
+ "name": "ADV Access Event",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:ADV-ACCESS-.#####",
+ "title_field": "zone"
+}

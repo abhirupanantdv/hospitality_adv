@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "guest",
+  "room",
+  "reservation",
+  "subject",
+  "message",
+  "priority",
+  "status",
+  "task"
+ ],
+ "fields": [
+  {
+   "label": "Guest",
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "options": "ADV Guest",
+   "idx": 1
+  },
+  {
+   "label": "Room",
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "options": "ADV Room",
+   "idx": 2
+  },
+  {
+   "label": "Reservation",
+   "fieldname": "reservation",
+   "fieldtype": "Link",
+   "options": "ADV Reservation",
+   "idx": 3
+  },
+  {
+   "label": "Subject",
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "idx": 4
+  },
+  {
+   "label": "Message",
+   "fieldname": "message",
+   "fieldtype": "Text Editor",
+   "reqd": 1,
+   "idx": 5
+  },
+  {
+   "label": "Priority",
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "options": "Low\nMedium\nHigh\nUrgent",
+   "default": "Medium",
+   "idx": 6
+  },
+  {
+   "label": "Status",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Open\nAssigned\nResolved\nClosed",
+   "default": "Open",
+   "idx": 7
+  },
+  {
+   "label": "Task",
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "options": "ADV Operation Task",
+   "idx": 8
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "ADV Hospitality Backend",
+ "name": "ADV Guest Message",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:ADV-MSG-.#####",
+ "title_field": "subject"
+}

@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "channel",
+  "status",
+  "reservations_today",
+  "mapping_warnings",
+  "last_sync"
+ ],
+ "fields": [
+  {
+   "label": "Property",
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "options": "ADV Property",
+   "idx": 1
+  },
+  {
+   "label": "Channel",
+   "fieldname": "channel",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "unique": 1,
+   "idx": 2
+  },
+  {
+   "label": "Status",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Healthy\nWarning\nError\nPaused",
+   "default": "Healthy",
+   "idx": 3
+  },
+  {
+   "label": "Reservations Today",
+   "fieldname": "reservations_today",
+   "fieldtype": "Int",
+   "idx": 4
+  },
+  {
+   "label": "Mapping Warnings",
+   "fieldname": "mapping_warnings",
+   "fieldtype": "Int",
+   "idx": 5
+  },
+  {
+   "label": "Last Sync",
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "idx": 6
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "ADV Hospitality Backend",
+ "name": "ADV OTA Channel",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:channel",
+ "title_field": "channel"
+}

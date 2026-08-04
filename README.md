@@ -14,8 +14,9 @@ bench --site your-site.local install-app adv_hospitality_backend
 bench --site your-site.local migrate
 ```
 
-The install hook creates the hospitality DocTypes, roles, module definition, and
-starter property, room, OTA, outlet, and lift-permission records.
+Frappe synchronizes the DocTypes from the versioned JSON files under
+`adv_hospitality_backend/adv_hospitality_backend/doctype`. Installing this app
+does not create demo hotel, guest, room, OTA, POS, or access-control records.
 
 ## Main DocTypes
 

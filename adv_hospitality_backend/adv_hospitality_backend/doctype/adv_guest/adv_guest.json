@@ -1,0 +1,133 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "guest_name",
+  "erpnext_customer",
+  "email",
+  "phone",
+  "nationality",
+  "loyalty_tier",
+  "vip",
+  "preferences",
+  "id_document"
+ ],
+ "fields": [
+  {
+   "label": "Guest Name",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "idx": 1
+  },
+  {
+   "label": "ERPNext Customer",
+   "fieldname": "erpnext_customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "idx": 2
+  },
+  {
+   "label": "Email",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "options": "Email",
+   "idx": 3
+  },
+  {
+   "label": "Phone",
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "idx": 4
+  },
+  {
+   "label": "Nationality",
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "idx": 5
+  },
+  {
+   "label": "Loyalty Tier",
+   "fieldname": "loyalty_tier",
+   "fieldtype": "Select",
+   "options": "Standard\nSilver\nGold\nPlatinum",
+   "idx": 6
+  },
+  {
+   "label": "VIP",
+   "fieldname": "vip",
+   "fieldtype": "Check",
+   "idx": 7
+  },
+  {
+   "label": "Preferences",
+   "fieldname": "preferences",
+   "fieldtype": "Small Text",
+   "idx": 8
+  },
+  {
+   "label": "ID Document",
+   "fieldname": "id_document",
+   "fieldtype": "Attach",
+   "idx": 9
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "ADV Hospitality Backend",
+ "name": "ADV Guest",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:guest_name",
+ "title_field": "guest_name"
+}

@@ -1,0 +1,131 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "room",
+  "asset",
+  "subject",
+  "issue_type",
+  "severity",
+  "status",
+  "assigned_to",
+  "scheduled_for"
+ ],
+ "fields": [
+  {
+   "label": "Room",
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "options": "ADV Room",
+   "idx": 1
+  },
+  {
+   "label": "Asset",
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "options": "Asset",
+   "idx": 2
+  },
+  {
+   "label": "Subject",
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "idx": 3
+  },
+  {
+   "label": "Issue Type",
+   "fieldname": "issue_type",
+   "fieldtype": "Select",
+   "options": "Electrical\nPlumbing\nHVAC\nFurniture\nDoor Lock\nInternet\nOther",
+   "idx": 4
+  },
+  {
+   "label": "Severity",
+   "fieldname": "severity",
+   "fieldtype": "Select",
+   "options": "Low\nMedium\nHigh\nCritical",
+   "default": "Medium",
+   "idx": 5
+  },
+  {
+   "label": "Status",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Open\nAssigned\nIn Progress\nResolved\nClosed",
+   "default": "Open",
+   "idx": 6
+  },
+  {
+   "label": "Assigned To",
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "options": "User",
+   "idx": 7
+  },
+  {
+   "label": "Scheduled For",
+   "fieldname": "scheduled_for",
+   "fieldtype": "Datetime",
+   "idx": 8
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "ADV Hospitality Backend",
+ "name": "ADV Maintenance Event",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:ADV-MAINT-.#####",
+ "title_field": "subject"
+}

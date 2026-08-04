@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "integration",
+  "event_type",
+  "status",
+  "reference_doctype",
+  "reference_name",
+  "message",
+  "event_time"
+ ],
+ "fields": [
+  {
+   "label": "Integration",
+   "fieldname": "integration",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "idx": 1
+  },
+  {
+   "label": "Event Type",
+   "fieldname": "event_type",
+   "fieldtype": "Select",
+   "options": "Sync\nWebhook\nExport\nImport\nAlert",
+   "idx": 2
+  },
+  {
+   "label": "Status",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Healthy\nWarning\nFailed\nQueued",
+   "default": "Healthy",
+   "idx": 3
+  },
+  {
+   "label": "Reference Doctype",
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "idx": 4
+  },
+  {
+   "label": "Reference Name",
+   "fieldname": "reference_name",
+   "fieldtype": "Data",
+   "idx": 5
+  },
+  {
+   "label": "Message",
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "idx": 6
+  },
+  {
+   "label": "Event Time",
+   "fieldname": "event_time",
+   "fieldtype": "Datetime",
+   "idx": 7
+  }
+ ],
+ "istable": 0,
+ "links": [],
+ "module": "ADV Hospitality Backend",
+ "name": "ADV Integration Event",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Hotel Operations Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Front Desk Agent",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Housekeeping Supervisor",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  },
+  {
+   "role": "Security Operator",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "submit": 0,
+   "cancel": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:ADV-INT-.#####",
+ "title_field": "integration"
+}

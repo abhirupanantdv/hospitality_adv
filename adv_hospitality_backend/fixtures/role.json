@@ -1,0 +1,30 @@
+[
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "doctype": "Role",
+  "name": "Hotel Operations Manager",
+  "role_name": "Hotel Operations Manager"
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "doctype": "Role",
+  "name": "Front Desk Agent",
+  "role_name": "Front Desk Agent"
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "doctype": "Role",
+  "name": "Housekeeping Supervisor",
+  "role_name": "Housekeeping Supervisor"
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "doctype": "Role",
+  "name": "Security Operator",
+  "role_name": "Security Operator"
+ }
+]
