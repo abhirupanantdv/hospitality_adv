@@ -6,6 +6,7 @@ app_email = "admin@example.com"
 app_license = "MIT"
 
 before_uninstall = "hospitality_adv.install.before_uninstall"
+boot_session = "hospitality_adv.session.set_command_center_home"
 
 fixtures = [
     {"dt": "Role", "filters": [["name", "in", ["Hotel Operations Manager", "Front Desk Agent", "Housekeeping Supervisor", "Security Operator"]]]},
