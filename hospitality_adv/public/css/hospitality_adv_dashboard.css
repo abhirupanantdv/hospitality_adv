@@ -34,6 +34,7 @@
 .had-kpi-panel,
 .had-pending-panel,
 .had-directory-panel,
+.had-live-chart-panel,
 .had-analytics-panel,
 .had-status-panel,
 .had-insight-panel,
@@ -99,6 +100,7 @@
 .had-kpi-panel,
 .had-pending-panel,
 .had-directory-panel,
+.had-live-chart-panel,
 .had-analytics-panel { background: var(--had-surface); }
 
 .had-kpi-grid {
@@ -224,6 +226,15 @@
     width: 30px;
 }
 
+.had-live-chart-panel { min-height: 310px; }
+.had-live-chart-panel .had-section-head > div { display: grid; gap: 2px; }
+.had-tab-chart-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.had-tab-chart-card { background: #fbfcfd; border: 1px solid #e3e9ef; border-radius: 8px; min-width: 0; padding: 14px; }
+.had-tab-chart-card h4 { color: var(--had-ink); font-size: 13px; font-weight: 650; margin: 0 0 8px; }
+.had-live-chart { min-height: 230px; overflow: hidden; }
+.had-live-chart .chart-container { margin: 0; width: 100%; }
+.had-chart-empty { align-items: center; color: var(--had-muted); display: flex; font-size: 12px; height: 230px; justify-content: center; text-align: center; }
+
 .had-bottom-grid { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
 .had-analytics-panel { min-height: 210px; }
@@ -270,6 +281,41 @@
 .had-shell button:disabled, .is-unavailable { cursor: not-allowed; opacity: .55; }
 .had-shell.is-loading { opacity: .58; pointer-events: none; }
 
+.had-insights-shell {
+    --had-ink: #263342;
+    --had-muted: #687789;
+    --had-line: #dce5ee;
+    --had-surface: #ffffff;
+    --had-canvas: #edf4fa;
+    background: var(--had-canvas);
+    color: var(--had-ink);
+    max-width: 1600px;
+    min-height: calc(100vh - 150px);
+    padding: 18px;
+}
+
+.had-insights-shell button { font: inherit; }
+.had-insights-header { align-items: end; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 18px; }
+.had-insights-header h2 { font-size: 20px; font-weight: 700; margin: 0; }
+.had-insights-header p { color: var(--had-muted); font-size: 13px; margin: 5px 0 0; }
+.had-insights-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.had-insights-action { background: #fff; border: 1px solid var(--had-line); border-radius: 6px; color: var(--had-ink); font-size: 12px; min-height: 32px; padding: 0 12px; }
+.had-insights-metrics { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 18px; }
+.had-insight-metric { background: var(--had-surface); border: 1px solid var(--had-line); border-radius: 8px; display: grid; gap: 7px; min-height: 112px; padding: 16px; }
+.had-insight-metric span { color: var(--had-muted); font-size: 12px; }
+.had-insight-metric strong { font-size: 23px; font-weight: 700; }
+.had-insight-metric small { color: var(--had-muted); font-size: 11px; }
+.had-insight-section { margin-top: 22px; }
+.had-insight-section-header { align-items: baseline; display: flex; gap: 9px; margin-bottom: 10px; }
+.had-insight-section-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
+.had-insight-section-header span { color: var(--had-muted); font-size: 12px; }
+.had-insight-chart-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.had-insight-chart-card { background: var(--had-surface); border: 1px solid var(--had-line); border-radius: 8px; min-width: 0; padding: 16px; }
+.had-insight-chart-card h4 { font-size: 13px; font-weight: 650; margin: 0 0 10px; }
+.had-insights-shell.is-loading { opacity: .58; pointer-events: none; }
+.had-insights-shell button:not(:disabled) { cursor: pointer; transition: box-shadow 120ms ease, transform 120ms ease, border-color 120ms ease; }
+.had-insights-shell button:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(31, 47, 64, .13); transform: translateY(-1px); }
+
 @media (max-width: 1380px) {
     .had-shell { grid-template-columns: 240px minmax(0, 1fr); }
     .had-right-rail { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -279,6 +325,7 @@
     .had-shell { grid-template-columns: 1fr; }
     .had-left-rail, .had-right-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .had-priority-panel, .had-kpi-panel, .had-pending-panel { height: 100%; }
+    .had-insights-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 640px) {
@@ -286,4 +333,6 @@
     .had-left-rail, .had-right-rail, .had-bottom-grid { grid-template-columns: 1fr; }
     .had-directory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .had-directory-card { min-height: 98px; }
+    .had-tab-chart-grid, .had-insight-chart-grid, .had-insights-metrics { grid-template-columns: 1fr; }
+    .had-insights-header { align-items: start; flex-direction: column; }
 }

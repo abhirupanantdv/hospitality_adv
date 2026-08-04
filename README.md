@@ -40,6 +40,11 @@ command center for accounting, buying, selling, stock, HRMS, and Hospitality ADV
 DocTypes. Cards are shown only when the logged-in user has access to the related
 DocType; ERPNext and HRMS content is therefore available when those apps are installed.
 
+`hospitality-adv-insights` is a second Desk page containing tab-aligned charts for
+finance, selling, buying, stock, HRMS, hotel operations, and Hospitality ADV POS.
+Both pages read the site's existing documents at request time. They do not insert
+or depend on sample records.
+
 After installing or updating the app, build its Desk assets before signing in:
 
 ```bash

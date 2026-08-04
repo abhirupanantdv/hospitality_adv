@@ -20,6 +20,7 @@ hospitality_adv.CommandCenter = class CommandCenter {
         });
         this.page.set_primary_action(__("New Customer"), () => this.new_doc("Customer"), "add");
         this.page.set_secondary_action(__("Refresh"), () => this.refresh(), "refresh");
+        this.page.add_menu_item(__("Open Insights"), () => frappe.set_route("hospitality-adv-insights"));
         this.make_layout();
         this.refresh();
     }
@@ -56,6 +57,7 @@ hospitality_adv.CommandCenter = class CommandCenter {
             </aside>
             <main class="had-main-stage">
                 ${this.directory_panel()}
+                ${this.live_chart_panel()}
                 <div class="had-bottom-grid">
                     ${this.analytics_panel()}
                     ${this.status_panel()}
@@ -66,6 +68,7 @@ hospitality_adv.CommandCenter = class CommandCenter {
                 ${this.schedule_panel()}
             </aside>
         `);
+        this.render_live_charts();
     }
 
     priority_panel() {
@@ -136,6 +139,83 @@ hospitality_adv.CommandCenter = class CommandCenter {
             </div>
             <div class="had-directory-grid">${this.directory_cards()}</div>
         </section>`;
+    }
+
+    live_chart_panel() {
+        const charts = this.active_charts();
+        return `<section class="had-live-chart-panel">
+            <div class="had-section-head">
+                <div><h3>${__("Live Analysis")}</h3><span>${this.active_tab_label()}</span></div>
+                <button class="had-link-button had-open-insights" type="button">${__("All insights")}</button>
+            </div>
+            <div class="had-tab-chart-grid">
+                ${charts
+                    .map(
+                        (chart, index) => `<article class="had-tab-chart-card">
+                            <h4>${this.escape(chart.title)}</h4>
+                            <div class="had-live-chart" data-chart-index="${index}"></div>
+                        </article>`
+                    )
+                    .join("")}
+            </div>
+        </section>`;
+    }
+
+    active_charts() {
+        const chart_tab = {
+            operations: "operations",
+            finance: "finance",
+            logistics: "stock",
+            hrms: "hrms",
+            hospitality: "hospitality",
+        }[this.active_tab];
+        return this.data?.charts?.[chart_tab] || [];
+    }
+
+    active_tab_label() {
+        return {
+            operations: __("Operations"),
+            finance: __("Finance"),
+            logistics: __("Stock and Logistics"),
+            hrms: __("Human Resources"),
+            hospitality: __("Hospitality ADV"),
+        }[this.active_tab];
+    }
+
+    render_live_charts() {
+        const charts = this.active_charts();
+        this.$shell.find(".had-live-chart").each((index, element) => this.render_chart(element, charts[index]));
+        this.$shell
+            .off("click", ".had-open-insights")
+            .on("click", ".had-open-insights", () => frappe.set_route("hospitality-adv-insights"));
+    }
+
+    render_chart(element, chart) {
+        const values = chart?.data?.datasets?.flatMap((dataset) => dataset.values || []) || [];
+        if (!chart || !values.some((value) => Number(value))) {
+            $(element).html(`<div class="had-chart-empty">${this.escape(chart?.empty_message || __("No accessible data yet."))}</div>`);
+            return;
+        }
+
+        try {
+            new frappe.Chart(element, {
+                data: chart.data,
+                type: chart.type,
+                height: 230,
+                colors: chart.colors,
+                axisOptions: { xIsSeries: true },
+                barOptions: { spaceRatio: 0.35 },
+                lineOptions: { regionFill: 1, hideDots: 0 },
+                tooltipOptions: {
+                    formatTooltipY: (value) =>
+                        frappe.format(value, { fieldtype: chart.value_format === "Currency" ? "Currency" : "Int" }),
+                },
+                valuesOverPoints: 0,
+            });
+        } catch (error) {
+            console.error("Unable to render Hospitality ADV chart", error);
+            $(element).html(`<div class="had-chart-empty">${this.escape(__("Chart unavailable."))}</div>`);
+        }
     }
 
     new_action(label, doctype) {
